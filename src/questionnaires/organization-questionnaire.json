@@ -1,0 +1,83 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "organization-edit",
+  "status": "active",
+  "title": "Edit Organization",
+  "item": [
+    {
+      "linkId": "name",
+      "text": "Organization Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "identifier",
+      "text": "Identifiers",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "identifier.system",
+          "text": "System",
+          "type": "string"
+        },
+        {
+          "linkId": "identifier.value",
+          "text": "Value",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "type",
+      "text": "Type",
+      "type": "string"
+    },
+    {
+      "linkId": "telecom",
+      "text": "Contact Information",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "telecom.system",
+          "text": "System",
+          "type": "choice",
+          "answerOption": [
+            {"valueString": "phone"},
+            {"valueString": "fax"},
+            {"valueString": "email"},
+            {"valueString": "url"}
+          ]
+        },
+        {
+          "linkId": "telecom.value",
+          "text": "Value",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "address",
+      "text": "Address",
+      "type": "group",
+      "item": [
+        { "linkId": "address.line", "text": "Street", "type": "string", "repeats": true },
+        { "linkId": "address.city", "text": "City", "type": "string" },
+        { "linkId": "address.state", "text": "State", "type": "string" },
+        { "linkId": "address.postalCode", "text": "Postal Code", "type": "string" },
+        { "linkId": "address.country", "text": "Country", "type": "string" }
+      ]
+    },
+    {
+      "linkId": "active",
+      "text": "Active",
+      "type": "boolean"
+    },
+    {
+      "linkId": "partOf",
+      "text": "Parent Organization Reference",
+      "type": "string"
+    }
+  ]
+} 

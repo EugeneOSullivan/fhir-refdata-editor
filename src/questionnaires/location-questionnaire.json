@@ -1,0 +1,309 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "location-questionnaire",
+  "title": "Location Questionnaire",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "name",
+      "text": "Name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "description",
+      "text": "Description",
+      "type": "string"
+    },
+    {
+      "linkId": "status",
+      "text": "Status",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/location-status",
+            "code": "active",
+            "display": "Active"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/location-status",
+            "code": "suspended",
+            "display": "Suspended"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/location-status",
+            "code": "inactive",
+            "display": "Inactive"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "mode",
+      "text": "Mode",
+      "type": "choice",
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/location-mode",
+            "code": "instance",
+            "display": "Instance"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/location-mode",
+            "code": "kind",
+            "display": "Kind"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "type",
+      "text": "Type",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "type.coding.system",
+          "text": "System",
+          "type": "string"
+        },
+        {
+          "linkId": "type.coding.code",
+          "text": "Code",
+          "type": "string"
+        },
+        {
+          "linkId": "type.coding.display",
+          "text": "Display",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "telecom",
+      "text": "Telecom",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "telecom.system",
+          "text": "System",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-system",
+                "code": "phone",
+                "display": "Phone"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-system",
+                "code": "fax",
+                "display": "Fax"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-system",
+                "code": "email",
+                "display": "Email"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-system",
+                "code": "url",
+                "display": "URL"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "telecom.value",
+          "text": "Value",
+          "type": "string"
+        },
+        {
+          "linkId": "telecom.use",
+          "text": "Use",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-use",
+                "code": "home",
+                "display": "Home"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-use",
+                "code": "work",
+                "display": "Work"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-use",
+                "code": "temp",
+                "display": "Temp"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-use",
+                "code": "old",
+                "display": "Old"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/contact-point-use",
+                "code": "mobile",
+                "display": "Mobile"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "address",
+      "text": "Address",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "address.use",
+          "text": "Use",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-use",
+                "code": "home",
+                "display": "Home"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-use",
+                "code": "work",
+                "display": "Work"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-use",
+                "code": "temp",
+                "display": "Temp"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-use",
+                "code": "old",
+                "display": "Old"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "address.type",
+          "text": "Type",
+          "type": "choice",
+          "answerOption": [
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-type",
+                "code": "postal",
+                "display": "Postal"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-type",
+                "code": "physical",
+                "display": "Physical"
+              }
+            },
+            {
+              "valueCoding": {
+                "system": "http://hl7.org/fhir/address-type",
+                "code": "both",
+                "display": "Both"
+              }
+            }
+          ]
+        },
+        {
+          "linkId": "address.line",
+          "text": "Address Line",
+          "type": "string",
+          "repeats": true
+        },
+        {
+          "linkId": "address.city",
+          "text": "City",
+          "type": "string"
+        },
+        {
+          "linkId": "address.district",
+          "text": "District",
+          "type": "string"
+        },
+        {
+          "linkId": "address.state",
+          "text": "State",
+          "type": "string"
+        },
+        {
+          "linkId": "address.postalCode",
+          "text": "Postal Code",
+          "type": "string"
+        },
+        {
+          "linkId": "address.country",
+          "text": "Country",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "physicalType",
+      "text": "Physical Type",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "physicalType.coding.system",
+          "text": "System",
+          "type": "string"
+        },
+        {
+          "linkId": "physicalType.coding.code",
+          "text": "Code",
+          "type": "string"
+        },
+        {
+          "linkId": "physicalType.coding.display",
+          "text": "Display",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "managingOrganization",
+      "text": "Managing Organization Reference",
+      "type": "string"
+    }
+  ]
+} 

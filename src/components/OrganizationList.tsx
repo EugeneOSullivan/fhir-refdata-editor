@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { Practitioner, Identifier, Bundle, OperationOutcome } from '@medplum/fhirtypes';
+import type { Organization, Identifier, Bundle, OperationOutcome } from '@medplum/fhirtypes';
 import { getFhirUrl } from '../fhirClient';
 import { debounce } from 'lodash';
 
-interface PractitionerListProps {
-  onSelectPractitioner: (practitioner: Practitioner) => void;
+interface OrganizationListProps {
+  onSelectOrganization: (organization: Organization) => void;
 }
 
-export function PractitionerList({ onSelectPractitioner }: PractitionerListProps) {
-  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
+export function OrganizationList({ onSelectOrganization }: OrganizationListProps) {
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,76 +20,60 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
   const debouncedSearch = useMemo(
     () => debounce(async (term: string) => {
       if (!term) {
-        // If no search term, just fetch the first page
-        await fetchPractitioners('', 0);
+        await fetchOrganizations('', 0);
         return;
       }
-
       setLoading(true);
       setError(null);
       try {
         // Try identifier search first
-        const identifierPath = `Practitioner?_count=${pageSize}&_getpagesoffset=0&_sort=name&identifier=${encodeURIComponent(term)}`;
+        const identifierPath = `Organization?_count=${pageSize}&_getpagesoffset=0&_sort=name&identifier=${encodeURIComponent(term)}`;
         const identifierUrl = getFhirUrl(identifierPath);
-        console.log('Fetching by identifier:', identifierUrl);
-        
         const identifierResponse = await fetch(identifierUrl);
         if (!identifierResponse.ok) {
-          throw new Error(`Failed to fetch practitioners: ${identifierResponse.status} ${identifierResponse.statusText}`);
+          throw new Error(`Failed to fetch organizations: ${identifierResponse.status} ${identifierResponse.statusText}`);
         }
-        
         const identifierData = await identifierResponse.json();
-        let allPractitioners: Practitioner[] = [];
+        let allOrganizations: Organization[] = [];
         let nextLink: string | null = null;
         let prevLink: string | null = null;
-
         if ('resourceType' in identifierData && identifierData.resourceType === 'Bundle') {
-          const bundle = identifierData as Bundle<Practitioner | OperationOutcome>;
-          const identifierPractitioners = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
-            .map(entry => entry.resource as Practitioner) || [];
-          
-          allPractitioners = [...identifierPractitioners];
+          const bundle = identifierData as Bundle<Organization | OperationOutcome>;
+          const identifierOrganizations = bundle.entry
+            ?.filter(entry => entry.resource?.resourceType === 'Organization')
+            .map(entry => entry.resource as Organization) || [];
+          allOrganizations = [...identifierOrganizations];
           nextLink = bundle.link?.find(link => link.relation === 'next')?.url || null;
           prevLink = bundle.link?.find(link => link.relation === 'previous')?.url || null;
         }
-
-        // If we found results by identifier, use those
-        if (allPractitioners.length > 0) {
-          setPractitioners(allPractitioners);
+        if (allOrganizations.length > 0) {
+          setOrganizations(allOrganizations);
           setNextPageUrl(nextLink);
           setPrevPageUrl(prevLink);
           return;
         }
-
-        // If no results by identifier, try family name search
-        const familyPath = `Practitioner?_count=${pageSize}&_getpagesoffset=0&_sort=name&family=${encodeURIComponent(term)}`;
-        const familyUrl = getFhirUrl(familyPath);
-        console.log('Fetching by family name:', familyUrl);
-        
-        const familyResponse = await fetch(familyUrl);
-        if (!familyResponse.ok) {
-          throw new Error(`Failed to fetch practitioners: ${familyResponse.status} ${familyResponse.statusText}`);
+        // If no results by identifier, try name search
+        const namePath = `Organization?_count=${pageSize}&_getpagesoffset=0&_sort=name&name=${encodeURIComponent(term)}`;
+        const nameUrl = getFhirUrl(namePath);
+        const nameResponse = await fetch(nameUrl);
+        if (!nameResponse.ok) {
+          throw new Error(`Failed to fetch organizations: ${nameResponse.status} ${nameResponse.statusText}`);
         }
-        
-        const familyData = await familyResponse.json();
-        if ('resourceType' in familyData && familyData.resourceType === 'Bundle') {
-          const bundle = familyData as Bundle<Practitioner | OperationOutcome>;
-          const familyPractitioners = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
-            .map(entry => entry.resource as Practitioner) || [];
-          
-          allPractitioners = [...familyPractitioners];
+        const nameData = await nameResponse.json();
+        if ('resourceType' in nameData && nameData.resourceType === 'Bundle') {
+          const bundle = nameData as Bundle<Organization | OperationOutcome>;
+          const nameOrganizations = bundle.entry
+            ?.filter(entry => entry.resource?.resourceType === 'Organization')
+            .map(entry => entry.resource as Organization) || [];
+          allOrganizations = [...nameOrganizations];
           nextLink = bundle.link?.find(link => link.relation === 'next')?.url || null;
           prevLink = bundle.link?.find(link => link.relation === 'previous')?.url || null;
         }
-
-        setPractitioners(allPractitioners);
+        setOrganizations(allOrganizations);
         setNextPageUrl(nextLink);
         setPrevPageUrl(prevLink);
       } catch (err) {
-        console.error('Error fetching practitioners:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch practitioners');
+        setError(err instanceof Error ? err.message : 'Failed to fetch organizations');
       } finally {
         setLoading(false);
       }
@@ -104,53 +88,35 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     };
   }, [searchTerm, debouncedSearch]);
 
-  const fetchPractitioners = async (term: string, offset: number) => {
+  const fetchOrganizations = async (term: string, offset: number) => {
     setLoading(true);
     setError(null);
     try {
-      let path = `Practitioner?_count=${pageSize}&_getpagesoffset=${offset}&_sort=name`;
-      
+      let path = `Organization?_count=${pageSize}&_getpagesoffset=${offset}&_sort=name`;
       if (term) {
-        // Try searching by identifier, family name, or given name
-        // Note: This will be an AND condition, but let's test if the parameters work
-        path += `&identifier=${encodeURIComponent(term)}&family=${encodeURIComponent(term)}&given=${encodeURIComponent(term)}`;
+        path += `&identifier=${encodeURIComponent(term)}&name=${encodeURIComponent(term)}`;
       }
-
       const url = getFhirUrl(path);
-      console.log('Fetching practitioners with URL:', url);
       const response = await fetch(url);
-      
       if (!response.ok) {
-        throw new Error(`Failed to fetch practitioners: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch organizations: ${response.status} ${response.statusText}`);
       }
-
       const data: unknown = await response.json();
-      console.log('FHIR Response:', data);
-
-      // Handle bundle response
       if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-        const bundle = data as Bundle<Practitioner | OperationOutcome>;
-        
-        // Store the full URLs from the bundle links
+        const bundle = data as Bundle<Organization | OperationOutcome>;
         const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
         const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-        
         setNextPageUrl(nextLink || null);
         setPrevPageUrl(prevLink || null);
-
-        // Extract practitioners from bundle
-        const practitioners = bundle.entry
-          ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
-          .map(entry => entry.resource as Practitioner) || [];
-
-        setPractitioners(practitioners);
+        const organizations = bundle.entry
+          ?.filter(entry => entry.resource?.resourceType === 'Organization')
+          .map(entry => entry.resource as Organization) || [];
+        setOrganizations(organizations);
         return;
       }
-
       throw new Error(`Unexpected response type: ${typeof data === 'object' && data !== null && 'resourceType' in data ? (data as { resourceType: string }).resourceType : 'unknown'}`);
     } catch (err) {
-      console.error('Error fetching practitioners:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch practitioners');
+      setError(err instanceof Error ? err.message : 'Failed to fetch organizations');
     } finally {
       setLoading(false);
     }
@@ -160,32 +126,23 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     if (nextPageUrl) {
       setLoading(true);
       try {
-        console.log('Fetching next page with URL:', nextPageUrl);
         const response = await fetch(nextPageUrl);
         if (!response.ok) {
           throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-        
         if ('resourceType' in data && data.resourceType === 'Bundle') {
-          const bundle = data as Bundle<Practitioner | OperationOutcome>;
-          
-          // Store the full URLs from the bundle links
+          const bundle = data as Bundle<Organization | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          
           setNextPageUrl(nextLink || null);
           setPrevPageUrl(prevLink || null);
-
-          // Extract practitioners from bundle
-          const practitioners = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
-            .map(entry => entry.resource as Practitioner) || [];
-
-          setPractitioners(practitioners);
+          const organizations = bundle.entry
+            ?.filter(entry => entry.resource?.resourceType === 'Organization')
+            .map(entry => entry.resource as Organization) || [];
+          setOrganizations(organizations);
         }
       } catch (err) {
-        console.error('Error fetching next page:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch next page');
       } finally {
         setLoading(false);
@@ -197,32 +154,23 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     if (prevPageUrl) {
       setLoading(true);
       try {
-        console.log('Fetching previous page with URL:', prevPageUrl);
         const response = await fetch(prevPageUrl);
         if (!response.ok) {
           throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-        
         if ('resourceType' in data && data.resourceType === 'Bundle') {
-          const bundle = data as Bundle<Practitioner | OperationOutcome>;
-          
-          // Store the full URLs from the bundle links
+          const bundle = data as Bundle<Organization | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          
           setNextPageUrl(nextLink || null);
           setPrevPageUrl(prevLink || null);
-
-          // Extract practitioners from bundle
-          const practitioners = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
-            .map(entry => entry.resource as Practitioner) || [];
-
-          setPractitioners(practitioners);
+          const organizations = bundle.entry
+            ?.filter(entry => entry.resource?.resourceType === 'Organization')
+            .map(entry => entry.resource as Organization) || [];
+          setOrganizations(organizations);
         }
       } catch (err) {
-        console.error('Error fetching previous page:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch previous page');
       } finally {
         setLoading(false);
@@ -235,13 +183,13 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
       <div style={{ 
         marginBottom: '1rem',
         padding: '1rem',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #e9ecef'
+        display: 'flex',
+        gap: '1rem',
+        alignItems: 'center'
       }}>
         <input
           type="text"
-          placeholder="Search by identifier or surname..."
+          placeholder="Search by identifier or name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
@@ -253,51 +201,32 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
             outline: 'none',
             transition: 'border-color 0.15s ease-in-out'
           }}
-          onFocus={(e) => e.target.style.borderColor = '#86b7fe'}
-          onBlur={(e) => e.target.style.borderColor = '#ced4da'}
         />
         {loading && (
           <span style={{ color: '#666' }}>Searching...</span>
         )}
       </div>
-
       {error && (
         <div style={{ 
-          color: '#dc3545', 
+          color: 'red', 
           padding: '1rem',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
+          backgroundColor: '#fff3f3',
+          border: '1px solid #ffcdd2',
           borderRadius: '4px',
-          margin: '1rem 0'
+          margin: '1rem'
         }}>
-          {error}
+          Error: {error}
         </div>
       )}
-      
-      {loading && (
+      {organizations.length === 0 && !loading ? (
         <div style={{ 
-          textAlign: 'center', 
           padding: '2rem',
-          color: '#6c757d'
+          textAlign: 'center',
+          color: '#666'
         }}>
-          Loading practitioners...
+          {searchTerm ? 'No organizations found matching your search' : 'No organizations found'}
         </div>
-      )}
-
-      {!loading && practitioners.length === 0 && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '2rem',
-          color: '#6c757d',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
-        }}>
-          {searchTerm ? 'No practitioners found matching your search' : 'No practitioners found'}
-        </div>
-      )}
-
-      {!loading && practitioners.length > 0 && (
+      ) : (
         <>
           <div style={{ 
             display: 'grid', 
@@ -305,10 +234,10 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
             gap: '1rem',
             padding: '1rem'
           }}>
-            {practitioners.map((practitioner) => (
+            {organizations.map((organization) => (
               <div
-                key={practitioner.id}
-                onClick={() => onSelectPractitioner(practitioner)}
+                key={organization.id}
+                onClick={() => onSelectOrganization(organization)}
                 style={{
                   border: '1px solid #ddd',
                   borderRadius: '8px',
@@ -329,11 +258,11 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
                 }}
               >
                 <h3 style={{ margin: '0 0 0.5rem 0' }}>
-                  {practitioner.name?.[0]?.family || 'No Family Name'}, {practitioner.name?.[0]?.given?.join(' ') || 'No Given Name'}
+                  {organization.name || 'No Name'}
                 </h3>
                 <div style={{ color: '#666' }}>
-                  <div>ID: {practitioner.id}</div>
-                  {practitioner.identifier?.map((id: Identifier, index: number) => (
+                  <div>ID: {organization.id}</div>
+                  {organization.identifier?.map((id: Identifier, index: number) => (
                     <div key={index}>
                       {id.system}: {id.value}
                     </div>
@@ -342,9 +271,7 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
               </div>
             ))}
           </div>
-
-          {/* Always show pagination if we have results */}
-          {practitioners.length > 0 && (
+          {organizations.length > 0 && (
             <div style={{ 
               display: 'flex', 
               justifyContent: 'center', 

@@ -1,0 +1,88 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "practitioner-role-edit",
+  "status": "active",
+  "title": "Edit Practitioner Role",
+  "item": [
+    {
+      "linkId": "practitioner",
+      "text": "Practitioner",
+      "type": "reference",
+      "required": true
+    },
+    {
+      "linkId": "organization",
+      "text": "Managing Organization",
+      "type": "reference",
+      "required": true
+    },
+    {
+      "linkId": "code",
+      "text": "Role",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "code.coding.system",
+          "text": "System",
+          "type": "string"
+        },
+        {
+          "linkId": "code.coding.code",
+          "text": "Code",
+          "type": "string"
+        },
+        {
+          "linkId": "code.coding.display",
+          "text": "Display",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "specialty",
+      "text": "Specialty",
+      "type": "group",
+      "repeats": true,
+      "item": [
+        {
+          "linkId": "specialty.coding.system",
+          "text": "System",
+          "type": "string"
+        },
+        {
+          "linkId": "specialty.coding.code",
+          "text": "Code",
+          "type": "string"
+        },
+        {
+          "linkId": "specialty.coding.display",
+          "text": "Display",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "linkId": "period",
+      "text": "Period",
+      "type": "group",
+      "item": [
+        {
+          "linkId": "period.start",
+          "text": "Start Date",
+          "type": "date"
+        },
+        {
+          "linkId": "period.end",
+          "text": "End Date",
+          "type": "date"
+        }
+      ]
+    },
+    {
+      "linkId": "active",
+      "text": "Active",
+      "type": "boolean"
+    }
+  ]
+} 

@@ -78,9 +78,10 @@ interface SDCFormWrapperProps {
   initialResponse: QuestionnaireResponse | null;
   onSave: (qResp: QuestionnaireResponse) => Promise<QuestionnaireResponse>;
   isCreating?: boolean;
+  resourceType?: string;
 }
 
-export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreating = false }: SDCFormWrapperProps) {
+export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreating = false, resourceType = "Practitioner" }: SDCFormWrapperProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localResponse, setLocalResponse] = useState<QuestionnaireResponse | null>(null);
@@ -138,7 +139,7 @@ export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreat
         borderBottom: "1px solid #e0e0e0", 
         paddingBottom: "0.5rem" 
       }}>
-        {isCreating ? "Create New Practitioner" : "Edit Practitioner"}
+        {isCreating ? `Create New ${resourceType}` : `Edit ${resourceType}`}
       </h2>
       
       {error && (
@@ -186,7 +187,7 @@ export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreat
         >
           {isSubmitting
             ? (isCreating ? "Creating..." : "Saving...")
-            : (isCreating ? "Create Practitioner" : "Save Changes")}
+            : (isCreating ? `Create ${resourceType}` : "Save Changes")}
         </button>
       </div>
     </div>
