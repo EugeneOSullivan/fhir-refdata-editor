@@ -9,17 +9,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "prepare": "husky install",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "validate": "npm-run-all --parallel type-check lint test build"
+    "validate": "npm-run-all --parallel type-check lint build"
   },
   "dependencies": {
     "@aehrc/smart-forms-renderer": "^0.45.1",
