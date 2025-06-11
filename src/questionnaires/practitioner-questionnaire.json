@@ -1,0 +1,132 @@
+{
+    "resourceType": "Questionnaire",
+    "id": "practitioner-edit",
+    "status": "active",
+    "title": "Edit Practitioner",
+    "item": [
+      {
+        "linkId": "name",
+        "text": "Name",
+        "type": "group",
+        "item": [
+          {
+            "linkId": "name.use",
+            "text": "Name Use",
+            "type": "choice",
+            "answerOption": [
+              {"valueString": "usual"},
+              {"valueString": "official"},
+              {"valueString": "temp"},
+              {"valueString": "nickname"},
+              {"valueString": "anonymous"},
+              {"valueString": "old"},
+              {"valueString": "maiden"}
+            ]
+      },
+      {
+        "linkId": "name.family",
+        "text": "Family name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "linkId": "name.given",
+            "text": "Given name(s)",
+            "type": "string",
+            "repeats": true
+          },
+          {
+            "linkId": "name.prefix",
+            "text": "Prefix",
+            "type": "string",
+            "repeats": true
+          },
+          {
+            "linkId": "name.suffix",
+            "text": "Suffix",
+            "type": "string",
+            "repeats": true
+          }
+        ]
+      },
+      {
+        "linkId": "identifier",
+        "text": "Identifiers",
+        "type": "group",
+        "repeats": true,
+        "item": [
+          {
+            "linkId": "identifier.system",
+            "text": "System",
+            "type": "string"
+          },
+          {
+            "linkId": "identifier.value",
+            "text": "Value",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "linkId": "telecom",
+        "text": "Contact Information",
+        "type": "group",
+        "repeats": true,
+        "item": [
+          {
+            "linkId": "telecom.system",
+            "text": "System",
+            "type": "choice",
+            "answerOption": [
+              {"valueString": "phone"},
+              {"valueString": "fax"},
+              {"valueString": "email"},
+              {"valueString": "pager"},
+              {"valueString": "url"},
+              {"valueString": "sms"},
+              {"valueString": "other"}
+            ]
+          },
+          {
+            "linkId": "telecom.value",
+            "text": "Value",
+        "type": "string"
+          },
+          {
+            "linkId": "telecom.use",
+            "text": "Use",
+            "type": "choice",
+            "answerOption": [
+              {"valueString": "home"},
+              {"valueString": "work"},
+              {"valueString": "temp"},
+              {"valueString": "old"},
+              {"valueString": "mobile"}
+            ]
+          }
+        ]
+      },
+      {
+        "linkId": "gender",
+        "text": "Gender",
+        "type": "choice",
+        "answerOption": [
+          {"valueString": "male"},
+          {"valueString": "female"},
+          {"valueString": "other"},
+          {"valueString": "unknown"}
+        ]
+      },
+      {
+        "linkId": "birthDate",
+        "text": "Birth Date",
+        "type": "date"
+      },
+      {
+        "linkId": "active",
+        "text": "Active",
+        "type": "boolean"
+      }
+    ]
+  }
+  
