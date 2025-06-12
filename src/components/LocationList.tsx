@@ -7,6 +7,121 @@ interface LocationListProps {
   onSelectLocation: (location: Location) => void;
 }
 
+// Shared styles for consistent design
+const containerStyle = {
+  maxWidth: 'none',
+  width: '95%',
+  margin: '0 auto',
+  padding: '2rem',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+};
+
+const searchContainerStyle = {
+  marginBottom: '2rem',
+  padding: '1.5rem',
+  backgroundColor: '#f8f9fa',
+  borderRadius: '8px',
+  border: '1px solid #e9ecef'
+};
+
+const searchInputStyle = {
+  width: '100%',
+  padding: '0.75rem',
+  fontSize: '1rem',
+  borderRadius: '6px',
+  border: '1px solid #ced4da',
+  outline: 'none',
+  transition: 'all 0.15s ease-in-out'
+};
+
+const tableStyle = {
+  width: '100%',
+  borderCollapse: 'collapse' as const,
+  backgroundColor: 'white',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+};
+
+const thStyle = {
+  backgroundColor: '#f8f9fa',
+  padding: '1rem',
+  textAlign: 'left' as const,
+  fontWeight: '600',
+  color: '#495057',
+  borderBottom: '2px solid #e9ecef'
+};
+
+const tdStyle = {
+  padding: '1rem',
+  borderBottom: '1px solid #e9ecef',
+  verticalAlign: 'top' as const
+};
+
+const buttonStyle = {
+  padding: '0.5rem 1rem',
+  fontSize: '0.875rem',
+  fontWeight: '500',
+  borderRadius: '4px',
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease-in-out',
+  backgroundColor: '#007bff',
+  color: 'white'
+};
+
+const paginationStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: '2rem',
+  padding: '1rem 0'
+};
+
+const errorStyle = {
+  backgroundColor: '#f8d7da',
+  color: '#721c24',
+  padding: '1rem',
+  borderRadius: '6px',
+  border: '1px solid #f5c6cb',
+  marginBottom: '1.5rem'
+};
+
+const loadingStyle = {
+  textAlign: 'center' as const,
+  padding: '3rem',
+  color: '#6c757d',
+  fontSize: '1.1rem'
+};
+
+const emptyStyle = {
+  textAlign: 'center' as const,
+  padding: '3rem',
+  color: '#6c757d',
+  fontSize: '1rem'
+};
+
+const badgeStyle = {
+  padding: '0.25rem 0.5rem',
+  fontSize: '0.75rem',
+  fontWeight: '500',
+  borderRadius: '4px',
+  textTransform: 'uppercase' as const
+};
+
+const getStatusBadgeColor = (status: string | undefined) => {
+  switch (status) {
+    case 'active':
+      return { backgroundColor: '#d4edda', color: '#155724' };
+    case 'inactive':
+      return { backgroundColor: '#f8d7da', color: '#721c24' };
+    case 'suspended':
+      return { backgroundColor: '#fff3cd', color: '#856404' };
+    default:
+      return { backgroundColor: '#e2e3e5', color: '#6c757d' };
+  }
+};
+
 export function LocationList({ onSelectLocation }: LocationListProps) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
@@ -156,7 +271,7 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
   };
 
   const formatAddress = (address: any) => {
-    if (!address) return '';
+    if (!address) return 'N/A';
     const parts = [];
     if (address.line && address.line.length > 0) {
       parts.push(address.line.join(', '));
@@ -165,208 +280,120 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
     if (address.state) parts.push(address.state);
     if (address.postalCode) parts.push(address.postalCode);
     if (address.country) parts.push(address.country);
-    return parts.join(', ');
+    return parts.join(', ') || 'N/A';
+  };
+
+  const formatType = (types: any[] | undefined) => {
+    if (!types || types.length === 0) return 'N/A';
+    return types
+      .map(type => type.coding?.[0]?.display || type.text || 'Unknown')
+      .join(', ');
   };
 
   return (
-    <div style={{ width: '100%' }}>
-      <div style={{ 
-        marginBottom: '1rem',
-        padding: '1rem',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #e9ecef'
-      }}>
+    <div style={containerStyle}>
+      <div style={searchContainerStyle}>
         <input
           type="text"
           placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            fontSize: '1rem',
-            borderRadius: '4px',
-            border: '1px solid #ced4da',
-            outline: 'none',
-            transition: 'border-color 0.15s ease-in-out'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#86b7fe'}
+          style={searchInputStyle}
+          onFocus={(e) => e.target.style.borderColor = '#007bff'}
           onBlur={(e) => e.target.style.borderColor = '#ced4da'}
         />
       </div>
 
       {error && (
-        <div style={{ 
-          color: '#dc3545', 
-          padding: '1rem',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          margin: '1rem 0'
-        }}>
-          {error}
+        <div style={errorStyle}>
+          <strong>Error:</strong> {error}
         </div>
       )}
 
-      {loading && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '2rem',
-          color: '#6c757d'
-        }}>
+      {loading ? (
+        <div style={loadingStyle}>
           Loading locations...
         </div>
-      )}
-
-      {!loading && locations.length === 0 && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '2rem',
-          color: '#6c757d',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
-        }}>
+      ) : locations.length === 0 ? (
+        <div style={emptyStyle}>
           No locations found.
         </div>
-      )}
+      ) : (
+        <>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Name</th>
+                <th style={thStyle}>Status</th>
+                <th style={thStyle}>Type</th>
+                <th style={thStyle}>Address</th>
+                <th style={thStyle}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {locations.map((location, index) => (
+                <tr key={location.id || index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa' }}>
+                  <td style={tdStyle}>
+                    <strong>{location.name || 'Unnamed Location'}</strong>
+                  </td>
+                  <td style={tdStyle}>
+                    <span style={{...badgeStyle, ...getStatusBadgeColor(location.status)}}>
+                      {location.status || 'Unknown'}
+                    </span>
+                  </td>
+                  <td style={tdStyle}>
+                    {formatType(location.type)}
+                  </td>
+                  <td style={tdStyle}>
+                    <small style={{ color: '#6c757d' }}>{formatAddress(location.address)}</small>
+                  </td>
+                  <td style={tdStyle}>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => onSelectLocation(location)}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#0056b3'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#007bff'}
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-      {!loading && locations.length > 0 && (
-        <div style={{ 
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 2fr 100px',
-            gap: '1rem',
-            padding: '1rem',
-            backgroundColor: '#f8f9fa',
-            borderBottom: '1px solid #e9ecef',
-            fontWeight: 'bold',
-            color: '#495057'
-          }}>
-            <div>Name</div>
-            <div>Status</div>
-            <div>Type</div>
-            <div>Address</div>
-            <div>Action</div>
-          </div>
-          
-          {locations.map((location) => (
-            <div
-              key={location.id}
+          <div style={paginationStyle}>
+            <button
               style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 2fr 100px',
-                gap: '1rem',
-                padding: '1rem',
-                borderBottom: '1px solid #e9ecef',
-                transition: 'background-color 0.15s ease-in-out'
+                ...buttonStyle,
+                backgroundColor: prevPageUrl ? '#6c757d' : '#e9ecef',
+                color: prevPageUrl ? 'white' : '#adb5bd',
+                cursor: prevPageUrl ? 'pointer' : 'not-allowed'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              onClick={handlePrevPage}
+              disabled={!prevPageUrl}
             >
-              <div style={{ fontWeight: '500' }}>
-                {location.name || 'N/A'}
-                {location.description && (
-                  <div style={{ fontSize: '0.875rem', color: '#6c757d', marginTop: '0.25rem' }}>
-                    {location.description}
-                  </div>
-                )}
-              </div>
-              <div>
-                <span style={{
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: '500',
-                  backgroundColor: location.status === 'active' ? '#d4edda' : 
-                                 location.status === 'inactive' ? '#f8d7da' : '#fff3cd',
-                  color: location.status === 'active' ? '#155724' : 
-                         location.status === 'inactive' ? '#721c24' : '#856404'
-                }}>
-                  {location.status || 'N/A'}
-                </span>
-              </div>
-              <div style={{ fontSize: '0.875rem' }}>
-                {location.type?.[0]?.coding?.[0]?.display || 
-                 location.type?.[0]?.coding?.[0]?.code || 'N/A'}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>
-                {formatAddress(location.address) || 'N/A'}
-              </div>
-              <div>
-                <button
-                  onClick={() => onSelectLocation(location)}
-                  style={{
-                    padding: '0.375rem 0.75rem',
-                    fontSize: '0.875rem',
-                    borderRadius: '4px',
-                    border: '1px solid #007bff',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease-in-out'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#0056b3';
-                    e.currentTarget.style.borderColor = '#0056b3';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#007bff';
-                    e.currentTarget.style.borderColor = '#007bff';
-                  }}
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {(nextPageUrl || prevPageUrl) && (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: '1rem',
-          marginTop: '1.5rem'
-        }}>
-          <button
-            onClick={handlePrevPage}
-            disabled={!prevPageUrl || loading}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: '1px solid #6c757d',
-              backgroundColor: prevPageUrl && !loading ? '#6c757d' : '#e9ecef',
-              color: prevPageUrl && !loading ? 'white' : '#6c757d',
-              cursor: prevPageUrl && !loading ? 'pointer' : 'not-allowed',
-              transition: 'all 0.15s ease-in-out'
-            }}
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={!nextPageUrl || loading}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: '1px solid #6c757d',
-              backgroundColor: nextPageUrl && !loading ? '#6c757d' : '#e9ecef',
-              color: nextPageUrl && !loading ? 'white' : '#6c757d',
-              cursor: nextPageUrl && !loading ? 'pointer' : 'not-allowed',
-              transition: 'all 0.15s ease-in-out'
-            }}
-          >
-            Next
-          </button>
-        </div>
+              Previous
+            </button>
+            
+            <span style={{ color: '#6c757d' }}>
+              {locations.length} locations
+            </span>
+            
+            <button
+              style={{
+                ...buttonStyle,
+                backgroundColor: nextPageUrl ? '#6c757d' : '#e9ecef',
+                color: nextPageUrl ? 'white' : '#adb5bd',
+                cursor: nextPageUrl ? 'pointer' : 'not-allowed'
+              }}
+              onClick={handleNextPage}
+              disabled={!nextPageUrl}
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

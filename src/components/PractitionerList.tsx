@@ -7,6 +7,100 @@ interface PractitionerListProps {
   onSelectPractitioner: (practitioner: Practitioner) => void;
 }
 
+// Shared styles for consistent design
+const containerStyle = {
+  maxWidth: 'none',
+  width: '95%',
+  margin: '0 auto',
+  padding: '2rem',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+};
+
+const searchContainerStyle = {
+  marginBottom: '2rem',
+  padding: '1.5rem',
+  backgroundColor: '#f8f9fa',
+  borderRadius: '8px',
+  border: '1px solid #e9ecef'
+};
+
+const searchInputStyle = {
+  width: '100%',
+  padding: '0.75rem',
+  fontSize: '1rem',
+  borderRadius: '6px',
+  border: '1px solid #ced4da',
+  outline: 'none',
+  transition: 'all 0.15s ease-in-out'
+};
+
+const tableStyle = {
+  width: '100%',
+  borderCollapse: 'collapse' as const,
+  backgroundColor: 'white',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+};
+
+const thStyle = {
+  backgroundColor: '#f8f9fa',
+  padding: '1rem',
+  textAlign: 'left' as const,
+  fontWeight: '600',
+  color: '#495057',
+  borderBottom: '2px solid #e9ecef'
+};
+
+const tdStyle = {
+  padding: '1rem',
+  borderBottom: '1px solid #e9ecef',
+  verticalAlign: 'top' as const
+};
+
+const buttonStyle = {
+  padding: '0.5rem 1rem',
+  fontSize: '0.875rem',
+  fontWeight: '500',
+  borderRadius: '4px',
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'all 0.15s ease-in-out',
+  backgroundColor: '#007bff',
+  color: 'white'
+};
+
+const paginationStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: '2rem',
+  padding: '1rem 0'
+};
+
+const errorStyle = {
+  backgroundColor: '#f8d7da',
+  color: '#721c24',
+  padding: '1rem',
+  borderRadius: '6px',
+  border: '1px solid #f5c6cb',
+  marginBottom: '1.5rem'
+};
+
+const loadingStyle = {
+  textAlign: 'center' as const,
+  padding: '3rem',
+  color: '#6c757d',
+  fontSize: '1.1rem'
+};
+
+const emptyStyle = {
+  textAlign: 'center' as const,
+  padding: '3rem',
+  color: '#6c757d',
+  fontSize: '1rem'
+};
+
 export function PractitionerList({ onSelectPractitioner }: PractitionerListProps) {
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +114,6 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
   const debouncedSearch = useMemo(
     () => debounce(async (term: string) => {
       if (!term) {
-        // If no search term, just fetch the first page
         await fetchPractitioners('', 0);
         return;
       }
@@ -31,7 +124,6 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         // Try identifier search first
         const identifierPath = `Practitioner?_count=${pageSize}&_getpagesoffset=0&_sort=name&identifier=${encodeURIComponent(term)}`;
         const identifierUrl = getFhirUrl(identifierPath);
-        console.log('Fetching by identifier:', identifierUrl);
         
         const identifierResponse = await fetch(identifierUrl);
         if (!identifierResponse.ok) {
@@ -65,7 +157,6 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         // If no results by identifier, try family name search
         const familyPath = `Practitioner?_count=${pageSize}&_getpagesoffset=0&_sort=name&family=${encodeURIComponent(term)}`;
         const familyUrl = getFhirUrl(familyPath);
-        console.log('Fetching by family name:', familyUrl);
         
         const familyResponse = await fetch(familyUrl);
         if (!familyResponse.ok) {
@@ -111,13 +202,10 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
       let path = `Practitioner?_count=${pageSize}&_getpagesoffset=${offset}&_sort=name`;
       
       if (term) {
-        // Try searching by identifier, family name, or given name
-        // Note: This will be an AND condition, but let's test if the parameters work
         path += `&identifier=${encodeURIComponent(term)}&family=${encodeURIComponent(term)}&given=${encodeURIComponent(term)}`;
       }
 
       const url = getFhirUrl(path);
-      console.log('Fetching practitioners with URL:', url);
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -125,20 +213,16 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
       }
 
       const data: unknown = await response.json();
-      console.log('FHIR Response:', data);
 
-      // Handle bundle response
       if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
         const bundle = data as Bundle<Practitioner | OperationOutcome>;
         
-        // Store the full URLs from the bundle links
         const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
         const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
         
         setNextPageUrl(nextLink || null);
         setPrevPageUrl(prevLink || null);
 
-        // Extract practitioners from bundle
         const practitioners = bundle.entry
           ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
           .map(entry => entry.resource as Practitioner) || [];
@@ -160,7 +244,6 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     if (nextPageUrl) {
       setLoading(true);
       try {
-        console.log('Fetching next page with URL:', nextPageUrl);
         const response = await fetch(nextPageUrl);
         if (!response.ok) {
           throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
@@ -170,14 +253,12 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         if ('resourceType' in data && data.resourceType === 'Bundle') {
           const bundle = data as Bundle<Practitioner | OperationOutcome>;
           
-          // Store the full URLs from the bundle links
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
           
           setNextPageUrl(nextLink || null);
           setPrevPageUrl(prevLink || null);
 
-          // Extract practitioners from bundle
           const practitioners = bundle.entry
             ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
             .map(entry => entry.resource as Practitioner) || [];
@@ -197,7 +278,6 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     if (prevPageUrl) {
       setLoading(true);
       try {
-        console.log('Fetching previous page with URL:', prevPageUrl);
         const response = await fetch(prevPageUrl);
         if (!response.ok) {
           throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
@@ -207,14 +287,12 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         if ('resourceType' in data && data.resourceType === 'Bundle') {
           const bundle = data as Bundle<Practitioner | OperationOutcome>;
           
-          // Store the full URLs from the bundle links
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
           
           setNextPageUrl(nextLink || null);
           setPrevPageUrl(prevLink || null);
 
-          // Extract practitioners from bundle
           const practitioners = bundle.entry
             ?.filter(entry => entry.resource?.resourceType === 'Practitioner')
             .map(entry => entry.resource as Practitioner) || [];
@@ -230,159 +308,123 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
     }
   };
 
+  const formatName = (practitioner: Practitioner) => {
+    if (!practitioner.name || practitioner.name.length === 0) return 'Unknown';
+    const name = practitioner.name[0];
+    const parts = [];
+    if (name.given) parts.push(name.given.join(' '));
+    if (name.family) parts.push(name.family);
+    return parts.join(' ') || 'Unknown';
+  };
+
+  const formatIdentifiers = (identifiers: Identifier[] | undefined) => {
+    if (!identifiers || identifiers.length === 0) return 'None';
+    return identifiers
+      .map(id => `${id.system || 'N/A'}: ${id.value || 'N/A'}`)
+      .join(', ');
+  };
+
   return (
-    <div style={{ width: '100%' }}>
-      <div style={{ 
-        marginBottom: '1rem',
-        padding: '1rem',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #e9ecef'
-      }}>
+    <div style={containerStyle}>
+      <div style={searchContainerStyle}>
         <input
           type="text"
-          placeholder="Search by identifier or surname..."
+          placeholder="Search by identifier or family name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            fontSize: '1rem',
-            borderRadius: '4px',
-            border: '1px solid #ced4da',
-            outline: 'none',
-            transition: 'border-color 0.15s ease-in-out'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#86b7fe'}
+          style={searchInputStyle}
+          onFocus={(e) => e.target.style.borderColor = '#007bff'}
           onBlur={(e) => e.target.style.borderColor = '#ced4da'}
         />
-        {loading && (
-          <span style={{ color: '#666' }}>Searching...</span>
-        )}
       </div>
 
       {error && (
-        <div style={{ 
-          color: '#dc3545', 
-          padding: '1rem',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          margin: '1rem 0'
-        }}>
-          {error}
+        <div style={errorStyle}>
+          <strong>Error:</strong> {error}
         </div>
       )}
-      
-      {loading && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '2rem',
-          color: '#6c757d'
-        }}>
+
+      {loading ? (
+        <div style={loadingStyle}>
           Loading practitioners...
         </div>
-      )}
-
-      {!loading && practitioners.length === 0 && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '2rem',
-          color: '#6c757d',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
-        }}>
-          {searchTerm ? 'No practitioners found matching your search' : 'No practitioners found'}
+      ) : practitioners.length === 0 ? (
+        <div style={emptyStyle}>
+          No practitioners found.
         </div>
-      )}
-
-      {!loading && practitioners.length > 0 && (
+      ) : (
         <>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '1rem',
-            padding: '1rem'
-          }}>
-            {practitioners.map((practitioner) => (
-              <div
-                key={practitioner.id}
-                onClick={() => onSelectPractitioner(practitioner)}
-                style={{
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  cursor: 'pointer',
-                  backgroundColor: 'white',
-                  color: 'black',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                }}
-              >
-                <h3 style={{ margin: '0 0 0.5rem 0' }}>
-                  {practitioner.name?.[0]?.family || 'No Family Name'}, {practitioner.name?.[0]?.given?.join(' ') || 'No Given Name'}
-                </h3>
-                <div style={{ color: '#666' }}>
-                  <div>ID: {practitioner.id}</div>
-                  {practitioner.identifier?.map((id: Identifier, index: number) => (
-                    <div key={index}>
-                      {id.system}: {id.value}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Name</th>
+                <th style={thStyle}>Identifiers</th>
+                <th style={thStyle}>Gender</th>
+                <th style={thStyle}>Birth Date</th>
+                <th style={thStyle}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {practitioners.map((practitioner, index) => (
+                <tr key={practitioner.id || index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa' }}>
+                  <td style={tdStyle}>
+                    <strong>{formatName(practitioner)}</strong>
+                  </td>
+                  <td style={tdStyle}>
+                    <small style={{ color: '#6c757d' }}>{formatIdentifiers(practitioner.identifier)}</small>
+                  </td>
+                  <td style={tdStyle}>
+                    {practitioner.gender || 'N/A'}
+                  </td>
+                  <td style={tdStyle}>
+                    {practitioner.birthDate || 'N/A'}
+                  </td>
+                  <td style={tdStyle}>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => onSelectPractitioner(practitioner)}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#0056b3'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#007bff'}
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          {/* Always show pagination if we have results */}
-          {practitioners.length > 0 && (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '1rem',
-              marginTop: '1rem',
-              padding: '1rem',
-              borderTop: '1px solid #eee'
-            }}>
-              <button
-                onClick={handlePrevPage}
-                disabled={!prevPageUrl || loading}
-                style={{
-                  opacity: (!prevPageUrl || loading) ? 0.5 : 1,
-                  cursor: (!prevPageUrl || loading) ? 'not-allowed' : 'pointer',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  backgroundColor: 'white'
-                }}
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNextPage}
-                disabled={!nextPageUrl || loading}
-                style={{
-                  opacity: (!nextPageUrl || loading) ? 0.5 : 1,
-                  cursor: (!nextPageUrl || loading) ? 'not-allowed' : 'pointer',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  backgroundColor: 'white'
-                }}
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <div style={paginationStyle}>
+            <button
+              style={{
+                ...buttonStyle,
+                backgroundColor: prevPageUrl ? '#6c757d' : '#e9ecef',
+                color: prevPageUrl ? 'white' : '#adb5bd',
+                cursor: prevPageUrl ? 'pointer' : 'not-allowed'
+              }}
+              onClick={handlePrevPage}
+              disabled={!prevPageUrl}
+            >
+              Previous
+            </button>
+            
+            <span style={{ color: '#6c757d' }}>
+              {practitioners.length} practitioners
+            </span>
+            
+            <button
+              style={{
+                ...buttonStyle,
+                backgroundColor: nextPageUrl ? '#6c757d' : '#e9ecef',
+                color: nextPageUrl ? 'white' : '#adb5bd',
+                cursor: nextPageUrl ? 'pointer' : 'not-allowed'
+              }}
+              onClick={handleNextPage}
+              disabled={!nextPageUrl}
+            >
+              Next
+            </button>
+          </div>
         </>
       )}
     </div>

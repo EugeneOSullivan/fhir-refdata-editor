@@ -113,238 +113,167 @@ export function PractitionerRoleForm({ initialPractitionerRole, onSave, isCreati
   };
 
   return (
-    <div style={{ 
-      maxWidth: "800px", 
-      margin: "0 auto", 
-      padding: "1rem", 
-      backgroundColor: "#f5f5f5",
-      borderRadius: "8px", 
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)" 
-    }}>
-      <h2 style={{ 
-        marginBottom: "1rem", 
-        color: "#1a73e8",
-        borderBottom: "1px solid #e0e0e0", 
-        paddingBottom: "0.5rem" 
-      }}>
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">
         {isCreating ? "Create New Practitioner Role" : "Edit Practitioner Role"}
       </h2>
       
       {error && (
-        <div style={{ 
-          color: "red", 
-          padding: "1rem", 
-          backgroundColor: "#fff3f3", 
-          border: "1px solid #ffcdd2", 
-          borderRadius: "4px", 
-          marginBottom: "1rem" 
-        }}>
+        <div className="fhir-form-wrapper-error">
           Error: {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ 
-        backgroundColor: "white",
-        padding: "1.5rem", 
-        borderRadius: "4px", 
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)" 
-      }}>
-        {/* Practitioner Picker */}
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-            Practitioner <span style={{ color: "red" }}>*</span>
-          </label>
-          <PractitionerPicker 
-            value={practitionerRef}
-            onChange={(ref) => setPractitionerRef(ref || '')}
-          />
-        </div>
-
-        {/* Organization Picker */}
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-            Organization <span style={{ color: "red" }}>*</span>
-          </label>
-          <OrganizationPicker 
-            value={organizationRef}
-            onChange={(ref) => setOrganizationRef(ref || '')}
-          />
-        </div>
-
-        {/* Role */}
-        <fieldset style={{ border: "1px solid #ddd", borderRadius: "4px", padding: "1rem", marginBottom: "1rem" }}>
-          <legend style={{ fontWeight: "bold" }}>Role</legend>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.5rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>System</label>
-              <input
-                type="text"
-                value={roleSystem}
-                onChange={(e) => setRoleSystem(e.target.value)}
-                placeholder="e.g., http://snomed.info/sct"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>Code</label>
-              <input
-                type="text"
-                value={roleCode}
-                onChange={(e) => setRoleCode(e.target.value)}
-                placeholder="e.g., 309343006"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <label style={{ display: "block", marginBottom: "0.25rem" }}>Display</label>
-            <input
-              type="text"
-              value={roleDisplay}
-              onChange={(e) => setRoleDisplay(e.target.value)}
-              placeholder="e.g., Physician"
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px"
-              }}
+      <div className="fhir-form-wrapper-content">
+        <form onSubmit={handleSubmit}>
+          {/* Practitioner Picker */}
+          <div className="fhir-field-spacing">
+            <label className="fhir-label-bold">
+              Practitioner <span className="fhir-required">*</span>
+            </label>
+            <PractitionerPicker 
+              value={practitionerRef}
+              onChange={(ref) => setPractitionerRef(ref || '')}
             />
           </div>
-        </fieldset>
 
-        {/* Specialty */}
-        <fieldset style={{ border: "1px solid #ddd", borderRadius: "4px", padding: "1rem", marginBottom: "1rem" }}>
-          <legend style={{ fontWeight: "bold" }}>Specialty</legend>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.5rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>System</label>
-              <input
-                type="text"
-                value={specialtySystem}
-                onChange={(e) => setSpecialtySystem(e.target.value)}
-                placeholder="e.g., http://snomed.info/sct"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>Code</label>
-              <input
-                type="text"
-                value={specialtyCode}
-                onChange={(e) => setSpecialtyCode(e.target.value)}
-                placeholder="e.g., 394802001"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
-              />
-            </div>
-          </div>
-          <div>
-            <label style={{ display: "block", marginBottom: "0.25rem" }}>Display</label>
-            <input
-              type="text"
-              value={specialtyDisplay}
-              onChange={(e) => setSpecialtyDisplay(e.target.value)}
-              placeholder="e.g., General medicine"
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px"
-              }}
+          {/* Organization Picker */}
+          <div className="fhir-field-spacing">
+            <label className="fhir-label-bold">
+              Organization <span className="fhir-required">*</span>
+            </label>
+            <OrganizationPicker 
+              value={organizationRef}
+              onChange={(ref) => setOrganizationRef(ref || '')}
             />
           </div>
-        </fieldset>
 
-        {/* Period */}
-        <fieldset style={{ border: "1px solid #ddd", borderRadius: "4px", padding: "1rem", marginBottom: "1rem" }}>
-          <legend style={{ fontWeight: "bold" }}>Period</legend>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>Start Date</label>
-              <input
-                type="date"
-                value={periodStart}
-                onChange={(e) => setPeriodStart(e.target.value)}
-                placeholder="YYYY-MM-DD"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
-              />
+          {/* Role */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Role</legend>
+            <div className="fhir-grid-2 fhir-small-spacing">
+              <div>
+                <label className="fhir-label-small">System</label>
+                <input
+                  type="text"
+                  value={roleSystem}
+                  onChange={(e) => setRoleSystem(e.target.value)}
+                  placeholder="e.g., http://snomed.info/sct"
+                  className="fhir-input"
+                />
+              </div>
+              <div>
+                <label className="fhir-label-small">Code</label>
+                <input
+                  type="text"
+                  value={roleCode}
+                  onChange={(e) => setRoleCode(e.target.value)}
+                  placeholder="e.g., 309343006"
+                  className="fhir-input"
+                />
+              </div>
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.25rem" }}>End Date</label>
+              <label className="fhir-label-small">Display</label>
               <input
-                type="date"
-                value={periodEnd}
-                onChange={(e) => setPeriodEnd(e.target.value)}
-                placeholder="YYYY-MM-DD"
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px"
-                }}
+                type="text"
+                value={roleDisplay}
+                onChange={(e) => setRoleDisplay(e.target.value)}
+                placeholder="e.g., Physician"
+                className="fhir-input"
               />
             </div>
+          </fieldset>
+
+          {/* Specialty */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Specialty</legend>
+            <div className="fhir-grid-2 fhir-small-spacing">
+              <div>
+                <label className="fhir-label-small">System</label>
+                <input
+                  type="text"
+                  value={specialtySystem}
+                  onChange={(e) => setSpecialtySystem(e.target.value)}
+                  placeholder="e.g., http://snomed.info/sct"
+                  className="fhir-input"
+                />
+              </div>
+              <div>
+                <label className="fhir-label-small">Code</label>
+                <input
+                  type="text"
+                  value={specialtyCode}
+                  onChange={(e) => setSpecialtyCode(e.target.value)}
+                  placeholder="e.g., 394802001"
+                  className="fhir-input"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="fhir-label-small">Display</label>
+              <input
+                type="text"
+                value={specialtyDisplay}
+                onChange={(e) => setSpecialtyDisplay(e.target.value)}
+                placeholder="e.g., General medicine"
+                className="fhir-input"
+              />
+            </div>
+          </fieldset>
+
+          {/* Period */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Period</legend>
+            <div className="fhir-grid-2">
+              <div>
+                <label className="fhir-label-small">Start Date</label>
+                <input
+                  type="date"
+                  value={periodStart}
+                  onChange={(e) => setPeriodStart(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+              <div>
+                <label className="fhir-label-small">End Date</label>
+                <input
+                  type="date"
+                  value={periodEnd}
+                  onChange={(e) => setPeriodEnd(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* Active */}
+          <div className="fhir-section-spacing">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={active}
+                onChange={(e) => setActive(e.target.checked)}
+                className="fhir-checkbox"
+              />
+              <span className="fhir-label-bold">Active</span>
+            </label>
           </div>
-        </fieldset>
+        </form>
+      </div>
 
-        {/* Active */}
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <input
-              type="checkbox"
-              checked={active}
-              onChange={(e) => setActive(e.target.checked)}
-            />
-            <span style={{ fontWeight: "bold" }}>Active</span>
-          </label>
-        </div>
-
-        <div style={{ textAlign: "right" }}>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              backgroundColor: isCreating ? "#4CAF50" : "#1a73e8",
-              color: "white", 
-              border: "none", 
-              padding: "0.75rem 1.5rem", 
-              borderRadius: "4px", 
-              fontSize: "1rem", 
-              cursor: isSubmitting ? "not-allowed" : "pointer", 
-              opacity: isSubmitting ? 0.7 : 1 
-            }}
-          >
-            {isSubmitting
-              ? (isCreating ? "Creating..." : "Saving...")
-              : (isCreating ? "Create Practitioner Role" : "Save Changes")}
-          </button>
-        </div>
-      </form>
+      <div className="fhir-form-wrapper-actions">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className={`fhir-form-submit-btn ${isCreating ? 'fhir-form-submit-btn-create' : 'fhir-form-submit-btn-edit'}`}
+        >
+          {isSubmitting
+            ? (isCreating ? "Creating..." : "Saving...")
+            : (isCreating ? "Create Practitioner Role" : "Save Changes")}
+        </button>
+      </div>
     </div>
   );
 } 

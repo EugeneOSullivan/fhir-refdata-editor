@@ -125,42 +125,18 @@ export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreat
   }
 
   return (
-    <div style={{ 
-      maxWidth: "800px", 
-      margin: "0 auto", 
-      padding: "1rem", 
-      backgroundColor: "#f5f5f5", /* light gray background for the container */
-      borderRadius: "8px", 
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)" 
-    }}>
-      <h2 style={{ 
-        marginBottom: "1rem", 
-        color: "#1a73e8", /* blue header */
-        borderBottom: "1px solid #e0e0e0", 
-        paddingBottom: "0.5rem" 
-      }}>
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">
         {isCreating ? `Create New ${resourceType}` : `Edit ${resourceType}`}
       </h2>
       
       {error && (
-        <div style={{ 
-          color: "red", 
-          padding: "1rem", 
-          backgroundColor: "#fff3f3", 
-          border: "1px solid #ffcdd2", 
-          borderRadius: "4px", 
-          marginBottom: "1rem" 
-        }}>
+        <div className="fhir-form-wrapper-error">
           Error: {error}
         </div>
       )}
 
-      <div style={{ 
-        backgroundColor: "white", /* white inner content */
-        padding: "1.5rem", 
-        borderRadius: "4px", 
-        boxShadow: "0 1px 2px rgba(0,0,0,0.05)" 
-      }}>
+      <div className="fhir-form-wrapper-content">
         <FormWrapper
           questionnaire={questionnaire}
           questionnaireResponse={localResponse}
@@ -169,21 +145,12 @@ export function SDCFormWrapper({ questionnaire, initialResponse, onSave, isCreat
         />
       </div>
 
-      <div style={{ marginTop: "1.5rem", textAlign: "right" }}>
+      <div className="fhir-form-wrapper-actions">
         <button
           type="button"
           onClick={handleSave}
           disabled={isSubmitting}
-          style={{
-            backgroundColor: isCreating ? "#4CAF50" : "#1a73e8", /* blue (or green) button */
-            color: "white", 
-            border: "none", 
-            padding: "0.75rem 1.5rem", 
-            borderRadius: "4px", 
-            fontSize: "1rem", 
-            cursor: isSubmitting ? "not-allowed" : "pointer", 
-            opacity: isSubmitting ? 0.7 : 1 
-          }}
+          className={`fhir-form-submit-btn ${isCreating ? 'fhir-form-submit-btn-create' : 'fhir-form-submit-btn-edit'}`}
         >
           {isSubmitting
             ? (isCreating ? "Creating..." : "Saving...")

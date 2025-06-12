@@ -154,28 +154,14 @@ export function PractitionerPicker({ value, onChange, placeholder = "Search for 
     <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         {selectedPractitioner ? (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0.5rem',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            backgroundColor: '#f8f9fa',
-            flex: 1
-          }}>
+          <div className="fhir-picker-selected">
             <span style={{ flex: 1 }}>
               {formatPractitionerName(selectedPractitioner)}
             </span>
             <button
               type="button"
               onClick={handleClear}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '0.25rem',
-                color: '#666'
-              }}
+              className="fhir-picker-clear-btn"
             >
               ✕
             </button>
@@ -188,13 +174,7 @@ export function PractitionerPicker({ value, onChange, placeholder = "Search for 
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
-            style={{
-              padding: '0.5rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              flex: 1
-            }}
+            className="fhir-picker-input"
           />
         )}
       </div>

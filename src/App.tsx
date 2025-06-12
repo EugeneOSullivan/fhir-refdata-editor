@@ -347,10 +347,26 @@ function App(): JSX.Element {
 
   // Render
   return (
-    <div>
-      {mode !== 'landing' && <Breadcrumb items={getBreadcrumbItems()} />}
-      <div style={{ padding: '1rem' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>FHIR RefData SDC Editor</h1>
+    <div style={{ 
+      backgroundColor: '#f8f9fa',
+      minHeight: '100vh',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
+      {mode !== 'landing' && (
+        <div style={{ 
+          padding: '1rem',
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e9ecef',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{ maxWidth: 'none', width: '95%', margin: '0 auto' }}>
+            <Breadcrumb items={getBreadcrumbItems()} />
+          </div>
+        </div>
+      )}
+      <div style={{ padding: '2rem 1rem' }}>
+        <div style={{ maxWidth: 'none', width: '95%', margin: '0 auto' }}>
+          <h1 style={{ textAlign: 'center', marginBottom: '3rem', color: '#495057', fontSize: '2.5rem', fontWeight: '300' }}>FHIR RefData SDC Editor</h1>
       {error && (
         <div style={{ 
           color: 'red', 
@@ -363,27 +379,62 @@ function App(): JSX.Element {
           Error: {error}
         </div>
       )}
-             {mode === 'landing' && (
-         <div style={{ 
-           maxWidth: "800px", 
-           margin: "0 auto",
-           display: 'flex', 
-           flexDirection: 'column', 
-           alignItems: 'center', 
-           gap: '2rem', 
-           marginTop: '3rem' 
-         }}>
-           <button style={{ fontSize: '1.5rem', padding: '1rem 2rem' }} onClick={() => handleLandingSelect('Practitioner')}>Manage Practitioners</button>
-           <button style={{ fontSize: '1.5rem', padding: '1rem 2rem' }} onClick={() => handleLandingSelect('Organization')}>Manage Organizations</button>
-           <button style={{ fontSize: '1.5rem', padding: '1rem 2rem' }} onClick={() => handleLandingSelect('Location')}>Manage Locations</button>
-           <button style={{ fontSize: '1.5rem', padding: '1rem 2rem' }} onClick={() => handleLandingSelect('PractitionerRole')}>Manage Practitioner Roles</button>
-         </div>
-       )}
-      {mode !== 'landing' && showList && (
-        <div style={{ 
-          maxWidth: "1200px", 
-          margin: "0 auto" 
-        }}>
+          {mode === 'landing' && (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              gap: '2rem', 
+              marginTop: '2rem' 
+            }}>
+              <button style={{ 
+                fontSize: '1.2rem', 
+                padding: '1rem 2rem',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease-in-out',
+                minWidth: '250px'
+              }} onClick={() => handleLandingSelect('Practitioner')}>Manage Practitioners</button>
+              <button style={{ 
+                fontSize: '1.2rem', 
+                padding: '1rem 2rem',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease-in-out',
+                minWidth: '250px'
+              }} onClick={() => handleLandingSelect('Organization')}>Manage Organizations</button>
+              <button style={{ 
+                fontSize: '1.2rem', 
+                padding: '1rem 2rem',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease-in-out',
+                minWidth: '250px'
+              }} onClick={() => handleLandingSelect('Location')}>Manage Locations</button>
+              <button style={{ 
+                fontSize: '1.2rem', 
+                padding: '1rem 2rem',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease-in-out',
+                minWidth: '250px'
+              }} onClick={() => handleLandingSelect('PractitionerRole')}>Manage Practitioner Roles</button>
+            </div>
+          )}
+          {mode !== 'landing' && showList && (
+            <div>
           <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <button 
               onClick={() => setMode('landing')}
@@ -430,10 +481,10 @@ function App(): JSX.Element {
                onCreateNewWithPractitioner={handleCreateNewWithPractitioner}
              />
            )}
-        </div>
-      )}
-      {mode !== 'landing' && !showList && (
-        <>
+            </div>
+          )}
+          {mode !== 'landing' && !showList && (
+            <>
                      <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
              <button 
                onClick={() => setShowList(true)}
@@ -505,12 +556,13 @@ function App(): JSX.Element {
           )}
         </>
       )}
-      {responseData && (
-        <ResponseDisplay 
-          data={responseData} 
-          onClose={() => setResponseData(null)} 
-        />
-      )}
+          {responseData && (
+            <ResponseDisplay 
+              data={responseData} 
+              onClose={() => setResponseData(null)} 
+            />
+          )}
+        </div>
       </div>
     </div>
   );

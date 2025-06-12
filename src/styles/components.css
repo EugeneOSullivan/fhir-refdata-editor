@@ -1,0 +1,587 @@
+/* FHIR App Design System - Reusable Components */
+
+/* Form Containers */
+@layer components {
+  /* Main form wrapper container - matches SDC form styling */
+  .fhir-form-wrapper {
+    width: 95%; /* Use 95% of available width */
+    margin: 2rem auto; /* More top/bottom margin and center horizontally */
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Form header styling */
+  .fhir-form-wrapper-header {
+    margin-bottom: 1rem;
+    color: #1a73e8;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 1.5rem; /* Larger header */
+    text-align: center; /* Center the header */
+  }
+
+  /* Error message styling for form wrapper */
+  .fhir-form-wrapper-error {
+    color: red;
+    padding: 1rem;
+    background-color: #fff3f3;
+    border: 1px solid #ffcdd2;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  /* White content area for forms */
+  .fhir-form-wrapper-content {
+    background-color: white;
+    padding: 2rem; /* More padding */
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  /* Submit button container */
+  .fhir-form-wrapper-actions {
+    margin-top: 2rem;
+    text-align: center; /* Center the submit button */
+    padding: 1rem;
+  }
+
+  /* Submit button styling */
+  .fhir-form-submit-btn {
+    color: white;
+    border: none;
+    padding: 1rem 2rem; /* Larger submit buttons */
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    min-width: 200px;
+  }
+
+  .fhir-form-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .fhir-form-submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .fhir-form-submit-btn-create {
+    background-color: #4CAF50;
+  }
+
+  .fhir-form-submit-btn-create:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+
+  .fhir-form-submit-btn-edit {
+    background-color: #1a73e8;
+  }
+
+  .fhir-form-submit-btn-edit:hover:not(:disabled) {
+    background-color: #1557b0;
+  }
+
+  /* Fieldsets and Sections */
+  .fhir-fieldset {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #fafafa;
+  }
+
+  .fhir-legend {
+    font-weight: bold;
+    color: #374151;
+    padding: 0 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  /* Form Controls */
+  .fhir-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.15s ease-in-out;
+    background-color: white;
+  }
+
+  .fhir-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.15s ease-in-out;
+    background-color: white;
+    cursor: pointer;
+  }
+
+  .fhir-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.15s ease-in-out;
+    background-color: white;
+    min-height: 100px;
+  }
+
+  .fhir-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 4px;
+    border: 2px solid #d1d5db;
+    color: #2563eb;
+    cursor: pointer;
+  }
+
+  .fhir-checkbox:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Labels */
+  .fhir-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: #374151;
+    font-size: 1rem;
+  }
+
+  .fhir-label-bold {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: bold;
+    color: #1f2937;
+    font-size: 1rem;
+  }
+
+  .fhir-label-small {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+  }
+
+  .fhir-required {
+    color: #dc2626;
+  }
+
+  /* Buttons */
+  .fhir-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.15s ease-in-out;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fhir-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-btn-primary {
+    background-color: #2563eb;
+    color: white;
+  }
+
+  .fhir-btn-primary:hover:not(:disabled) {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  .fhir-btn-success {
+    background-color: #10b981;
+    color: white;
+  }
+
+  .fhir-btn-success:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-1px);
+  }
+
+  .fhir-btn-danger {
+    background-color: #ef4444;
+    color: white;
+  }
+
+  .fhir-btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+  }
+
+  .fhir-btn-secondary {
+    background-color: #6b7280;
+    color: white;
+  }
+
+  .fhir-btn-secondary:hover:not(:disabled) {
+    background-color: #4b5563;
+    transform: translateY(-1px);
+  }
+
+  .fhir-btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+  }
+
+  .fhir-btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    border-radius: 8px;
+  }
+
+  .fhir-btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* Improved picker button styling for inline buttons */
+  .fhir-picker-clear-btn {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 0.375rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.15s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .fhir-picker-clear-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .fhir-picker-input {
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.15s ease-in-out;
+    background-color: white;
+    flex: 1;
+  }
+
+  .fhir-picker-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-picker-selected {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    flex: 1;
+    gap: 0.5rem;
+  }
+
+  /* Grid Layouts */
+  .fhir-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .fhir-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .fhir-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .fhir-grid-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fhir-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .fhir-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .fhir-grid-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fhir-grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Error Messages */
+  .fhir-error {
+    color: #dc2626;
+    padding: 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .fhir-success {
+    color: #059669;
+    padding: 1rem;
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .fhir-warning {
+    color: #d97706;
+    padding: 1rem;
+    background-color: #fffbeb;
+    border: 1px solid #fed7aa;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .fhir-info {
+    color: #2563eb;
+    padding: 1rem;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Dynamic Sections (for repeating fields) */
+  .fhir-dynamic-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f9fafb;
+  }
+
+  .fhir-dynamic-grid {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .fhir-dynamic-grid-2 {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @media (min-width: 768px) {
+    .fhir-dynamic-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .fhir-dynamic-grid-3 {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @media (min-width: 768px) {
+    .fhir-dynamic-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .fhir-dynamic-grid-4 {
+    display: grid;
+    gap: 1rem;
+    align-items: end;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @media (min-width: 640px) {
+    .fhir-dynamic-grid-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fhir-dynamic-grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Spacing Utilities */
+  .fhir-section-spacing {
+    margin-bottom: 2rem;
+  }
+
+  .fhir-field-spacing {
+    margin-bottom: 1.5rem;
+  }
+
+  .fhir-small-spacing {
+    margin-bottom: 1rem;
+  }
+
+  /* List Views */
+  .fhir-list-container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .fhir-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .fhir-table-header {
+    background-color: #f9fafb;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .fhir-table-cell {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+
+  .fhir-table-row:hover {
+    background-color: #f9fafb;
+  }
+
+  /* Search and Filters */
+  .fhir-search-container {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .fhir-search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.15s ease-in-out;
+    background-color: white;
+  }
+
+  .fhir-search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Status Badges */
+  .fhir-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .fhir-badge-active {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  .fhir-badge-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+
+  .fhir-badge-suspended {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  /* Loading States */
+  .fhir-loading {
+    text-align: center;
+    padding: 3rem 0;
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+
+  .fhir-empty {
+    text-align: center;
+    padding: 3rem 0;
+    color: #9ca3af;
+    font-size: 1.1rem;
+  }
+}

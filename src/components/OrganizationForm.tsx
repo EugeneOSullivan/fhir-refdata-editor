@@ -178,417 +178,266 @@ export function OrganizationForm({ initialOrganization, onSave, isCreating = fal
   };
 
   return (
-    <div style={{ 
-      maxWidth: "800px", 
-      margin: "0 auto", 
-      padding: "1rem", 
-      backgroundColor: "#f8f9fa",
-      borderRadius: "8px", 
-      border: "1px solid #e9ecef" 
-    }}>
-      <h2 style={{ 
-        marginBottom: "1.5rem", 
-        color: "#495057",
-        borderBottom: "2px solid #007bff", 
-        paddingBottom: "0.5rem" 
-      }}>
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">
         {isCreating ? "Create New Organization" : "Edit Organization"}
       </h2>
       
       {error && (
-        <div style={{ 
-          color: "#dc3545", 
-          padding: "1rem", 
-          backgroundColor: "#f8d7da", 
-          border: "1px solid #f5c6cb", 
-          borderRadius: "4px", 
-          marginBottom: "1.5rem" 
-        }}>
+        <div className="fhir-form-wrapper-error">
           Error: {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ 
-        backgroundColor: "white",
-        padding: "2rem", 
-        borderRadius: "8px", 
-        border: "1px solid #e9ecef"
-      }}>
-        {/* Basic Information */}
-        <fieldset style={{ border: "2px solid #e9ecef", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem" }}>
-          <legend style={{ fontWeight: "bold", color: "#495057", padding: "0 0.5rem" }}>Basic Information</legend>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>
-                Name <span style={{ color: "#dc3545" }}>*</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>
-                Type
-              </label>
-              <input
-                type="text"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                placeholder="e.g., Hospital, Clinic, Practice"
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            <div>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: "600", color: "#495057" }}>
-                <input
-                  type="checkbox"
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                  style={{ width: "1.2rem", height: "1.2rem" }}
-                />
-                Active
-              </label>
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>
-                Parent Organization
-              </label>
-              <OrganizationPicker 
-                value={parentOrgRef}
-                onChange={(ref) => setParentOrgRef(ref || '')}
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        {/* Identifiers */}
-        <fieldset style={{ border: "2px solid #e9ecef", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem" }}>
-          <legend style={{ fontWeight: "bold", color: "#495057", padding: "0 0.5rem" }}>Identifiers</legend>
-          
-          {identifiers.map((identifier, index) => (
-            <div key={index} style={{ 
-              display: "grid", 
-              gridTemplateColumns: "1fr 1fr auto", 
-              gap: "0.5rem", 
-              marginBottom: "1rem",
-              alignItems: "end"
-            }}>
+      <div className="fhir-form-wrapper-content">
+        <form onSubmit={handleSubmit}>
+          {/* Basic Information */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Basic Information</legend>
+            
+            <div className="fhir-grid-2 fhir-field-spacing">
               <div>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>System</label>
+                <label className="fhir-label-bold">
+                  Name <span className="fhir-required">*</span>
+                </label>
                 <input
                   type="text"
-                  value={identifier.system}
-                  onChange={(e) => handleIdentifierChange(index, 'system', e.target.value)}
-                  placeholder="e.g., http://hl7.org/fhir/sid/us-npi"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "4px",
-                    fontSize: "1rem"
-                  }}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="fhir-input"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>Value</label>
+                <label className="fhir-label-bold">Type</label>
                 <input
                   type="text"
-                  value={identifier.value}
-                  onChange={(e) => handleIdentifierChange(index, 'value', e.target.value)}
-                  placeholder="Identifier value"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "4px",
-                    fontSize: "1rem"
-                  }}
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  placeholder="e.g., Hospital, Clinic"
+                  className="fhir-input"
                 />
               </div>
-              {identifiers.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveIdentifier(index)}
-                  style={{
-                    padding: "0.75rem",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Remove
-                </button>
-              )}
             </div>
-          ))}
-          
-          <button
-            type="button"
-            onClick={handleAddIdentifier}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "0.875rem"
-            }}
-          >
-            Add Identifier
-          </button>
-        </fieldset>
 
-        {/* Contact Information */}
-        <fieldset style={{ border: "2px solid #e9ecef", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem" }}>
-          <legend style={{ fontWeight: "bold", color: "#495057", padding: "0 0.5rem" }}>Contact Information</legend>
-          
-          {telecoms.map((telecom, index) => (
-            <div key={index} style={{ 
-              display: "grid", 
-              gridTemplateColumns: "1fr 2fr auto", 
-              gap: "0.5rem", 
-              marginBottom: "1rem",
-              alignItems: "end"
-            }}>
+            <div className="fhir-grid-2 fhir-field-spacing">
               <div>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>System</label>
-                <select
-                  value={telecom.system}
-                  onChange={(e) => handleTelecomChange(index, 'system', e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "4px",
-                    fontSize: "1rem"
-                  }}
-                >
-                  <option value="">Select...</option>
-                  <option value="phone">Phone</option>
-                  <option value="fax">Fax</option>
-                  <option value="email">Email</option>
-                  <option value="url">URL</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>Value</label>
-                <input
-                  type="text"
-                  value={telecom.value}
-                  onChange={(e) => handleTelecomChange(index, 'value', e.target.value)}
-                  placeholder="Contact value"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "4px",
-                    fontSize: "1rem"
-                  }}
+                <label className="fhir-label-bold">Part Of (Parent Organization)</label>
+                <OrganizationPicker 
+                  value={parentOrgRef}
+                  onChange={(ref) => setParentOrgRef(ref || '')}
                 />
               </div>
-              {telecoms.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveTelecom(index)}
-                  style={{
-                    padding: "0.75rem",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Remove
-                </button>
-              )}
+              <div className="fhir-section-spacing">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={active}
+                    onChange={(e) => setActive(e.target.checked)}
+                    className="fhir-checkbox"
+                  />
+                  <span className="fhir-label-bold">Active</span>
+                </label>
+              </div>
             </div>
-          ))}
-          
-          <button
-            type="button"
-            onClick={handleAddTelecom}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "0.875rem"
-            }}
-          >
-            Add Contact
-          </button>
-        </fieldset>
+          </fieldset>
 
-        {/* Address */}
-        <fieldset style={{ border: "2px solid #e9ecef", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem" }}>
-          <legend style={{ fontWeight: "bold", color: "#495057", padding: "0 0.5rem" }}>Address</legend>
-          
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>Address Lines</label>
-            {addressLines.map((line, index) => (
-              <div key={index} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-                <input
-                  type="text"
-                  value={line}
-                  onChange={(e) => handleAddressLineChange(index, e.target.value)}
-                  placeholder={`Address line ${index + 1}`}
-                  style={{
-                    flex: 1,
-                    padding: "0.75rem",
-                    border: "1px solid #ced4da",
-                    borderRadius: "4px",
-                    fontSize: "1rem"
-                  }}
-                />
-                {addressLines.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAddressLine(index)}
-                    style={{
-                      padding: "0.75rem",
-                      backgroundColor: "#dc3545",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Remove
-                  </button>
-                )}
+          {/* Identifiers */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Identifiers</legend>
+            
+            {identifiers.map((identifier, index) => (
+              <div key={index} className="fhir-dynamic-section">
+                <div className="fhir-dynamic-grid-3">
+                  <div>
+                    <label className="fhir-label-small">System</label>
+                    <input
+                      type="text"
+                      value={identifier.system}
+                      onChange={(e) => handleIdentifierChange(index, 'system', e.target.value)}
+                      placeholder="e.g., http://example.com/identifiers"
+                      className="fhir-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="fhir-label-small">Value</label>
+                    <input
+                      type="text"
+                      value={identifier.value}
+                      onChange={(e) => handleIdentifierChange(index, 'value', e.target.value)}
+                      placeholder="Identifier value"
+                      className="fhir-input"
+                    />
+                  </div>
+                  {identifiers.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveIdentifier(index)}
+                      className="fhir-btn-small fhir-btn-danger"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
+            
             <button
               type="button"
-              onClick={handleAddAddressLine}
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#28a745",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "0.875rem"
-              }}
+              onClick={handleAddIdentifier}
+              className="fhir-btn-small fhir-btn-success"
             >
-              Add Address Line
+              Add Identifier
             </button>
-          </div>
+          </fieldset>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>City</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>State</label>
-              <input
-                type="text"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-          </div>
+          {/* Contact Information */}
+          <fieldset className="fhir-fieldset">
+            <legend className="fhir-legend">Contact Information</legend>
+            
+            {telecoms.map((telecom, index) => (
+              <div key={index} className="fhir-dynamic-section">
+                <div className="fhir-dynamic-grid-3">
+                  <div>
+                    <label className="fhir-label-small">System</label>
+                    <select
+                      value={telecom.system}
+                      onChange={(e) => handleTelecomChange(index, 'system', e.target.value)}
+                      className="fhir-select"
+                    >
+                      <option value="">Select...</option>
+                      <option value="phone">Phone</option>
+                      <option value="fax">Fax</option>
+                      <option value="email">Email</option>
+                      <option value="url">URL</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="fhir-label-small">Value</label>
+                    <input
+                      type="text"
+                      value={telecom.value}
+                      onChange={(e) => handleTelecomChange(index, 'value', e.target.value)}
+                      placeholder="Contact value"
+                      className="fhir-input"
+                    />
+                  </div>
+                  {telecoms.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTelecom(index)}
+                      className="fhir-btn-small fhir-btn-danger"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            <button
+              type="button"
+              onClick={handleAddTelecom}
+              className="fhir-btn-small fhir-btn-success"
+            >
+              Add Contact
+            </button>
+          </fieldset>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>Postal Code</label>
-              <input
-                type="text"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
+          {/* Address */}
+          <fieldset className="fhir-fieldset fhir-section-spacing">
+            <legend className="fhir-legend">Address</legend>
+            
+            <div className="fhir-field-spacing">
+              <label className="fhir-label-bold">Address Lines</label>
+              {addressLines.map((line, index) => (
+                <div key={index} className="fhir-dynamic-section">
+                  <div className="fhir-dynamic-grid-2">
+                    <input
+                      type="text"
+                      value={line}
+                      onChange={(e) => handleAddressLineChange(index, e.target.value)}
+                      placeholder={`Address line ${index + 1}`}
+                      className="fhir-input"
+                    />
+                    {addressLines.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAddressLine(index)}
+                        className="fhir-btn-small fhir-btn-danger"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddAddressLine}
+                className="fhir-btn-small fhir-btn-success"
+              >
+                Add Address Line
+              </button>
             </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#495057" }}>Country</label>
-              <input
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #ced4da",
-                  borderRadius: "4px",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-          </div>
-        </fieldset>
 
-        {/* Submit Button */}
-        <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              padding: "1rem 2rem",
-              fontSize: "1.1rem",
-              fontWeight: "600",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: isSubmitting ? "#6c757d" : "#007bff",
-              color: "white",
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              transition: "background-color 0.15s ease-in-out"
-            }}
-          >
-            {isSubmitting ? "Saving..." : (isCreating ? "Create Organization" : "Update Organization")}
-          </button>
-        </div>
-      </form>
+            <div className="fhir-grid-2 fhir-field-spacing">
+              <div>
+                <label className="fhir-label-small">City</label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+              <div>
+                <label className="fhir-label-small">State</label>
+                <input
+                  type="text"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+            </div>
+
+            <div className="fhir-grid-2">
+              <div>
+                <label className="fhir-label-small">Postal Code</label>
+                <input
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+              <div>
+                <label className="fhir-label-small">Country</label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="fhir-input"
+                />
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <div className="fhir-form-wrapper-actions">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className={`fhir-form-submit-btn ${isCreating ? 'fhir-form-submit-btn-create' : 'fhir-form-submit-btn-edit'}`}
+        >
+          {isSubmitting
+            ? (isCreating ? "Creating..." : "Saving...")
+            : (isCreating ? "Create Organization" : "Save Changes")}
+        </button>
+      </div>
     </div>
   );
 } 
