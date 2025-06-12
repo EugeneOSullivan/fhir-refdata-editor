@@ -5,6 +5,7 @@ import type { QuestionnaireResponse } from '@medplum/fhirtypes';
 import { SmartFormsRenderer, useQuestionnaireResponseStore } from '@aehrc/smart-forms-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { isEqual } from 'lodash';
+import '../styles/components.css';
 // import type { Questionnaire } from 'fhir/r4';
 
 // bundle renderer + theme + react-query

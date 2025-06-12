@@ -10,6 +10,7 @@ import { LocationList } from './components/LocationList';
 import { LocationForm } from './components/LocationForm';
 import { OrganizationForm } from './components/OrganizationForm';
 import { Breadcrumb } from './components/Breadcrumb';
+import { ThemeToggle } from './components/ThemeToggle';
 import type { QuestionnaireResponse } from '@medplum/fhirtypes';
 // import type { Questionnaire } from 'fhir/r4';
 import { fhirClient } from './fhirClient';
@@ -348,16 +349,18 @@ function App(): JSX.Element {
   // Render
   return (
     <div style={{ 
-      backgroundColor: '#f8f9fa',
+      backgroundColor: 'var(--fhir-bg-color)',
+      color: 'var(--fhir-text-color)',
       minHeight: '100vh',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
+      <ThemeToggle />
       {mode !== 'landing' && (
         <div style={{ 
           padding: '1rem',
-          backgroundColor: '#ffffff',
-          borderBottom: '1px solid #e9ecef',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          backgroundColor: 'var(--fhir-form-content-bg)',
+          borderBottom: '1px solid var(--fhir-border-color)',
+          boxShadow: '0 2px 4px var(--fhir-shadow-color)'
         }}>
           <div style={{ maxWidth: 'none', width: '95%', margin: '0 auto' }}>
             <Breadcrumb items={getBreadcrumbItems()} />

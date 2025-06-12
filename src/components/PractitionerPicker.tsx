@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import type { Practitioner, Bundle, OperationOutcome } from '@medplum/fhirtypes';
 import { getFhirUrl } from '../fhirClient';
 import { debounce } from 'lodash';
+import '../styles/components.css';
 
 interface PractitionerPickerProps {
   value?: string; // The current reference string like "Practitioner/123"
@@ -151,13 +152,11 @@ export function PractitionerPicker({ value, onChange, placeholder = "Search for 
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div ref={dropdownRef} className="fhir-picker-container">
+      <div className="fhir-picker-wrapper">
         {selectedPractitioner ? (
           <div className="fhir-picker-selected">
-            <span style={{ flex: 1 }}>
-              {formatPractitionerName(selectedPractitioner)}
-            </span>
+            <span>{formatPractitionerName(selectedPractitioner)}</span>
             <button
               type="button"
               onClick={handleClear}
@@ -180,26 +179,14 @@ export function PractitionerPicker({ value, onChange, placeholder = "Search for 
       </div>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          backgroundColor: 'white',
-          border: '1px solid #ddd',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          maxHeight: '200px',
-          overflowY: 'auto',
-          zIndex: 1000
-        }}>
+        <div className="fhir-picker-dropdown">
           {loading && (
-            <div style={{ padding: '0.5rem', color: '#666', textAlign: 'center' }}>
+            <div className="fhir-picker-message">
               Searching...
             </div>
           )}
           {!loading && practitioners.length === 0 && searchTerm.length >= 2 && (
-            <div style={{ padding: '0.5rem', color: '#666', textAlign: 'center' }}>
+            <div className="fhir-picker-message">
               No practitioners found
             </div>
           )}
@@ -207,22 +194,12 @@ export function PractitionerPicker({ value, onChange, placeholder = "Search for 
             <div
               key={practitioner.id}
               onClick={() => handleSelect(practitioner)}
-              style={{
-                padding: '0.5rem',
-                cursor: 'pointer',
-                borderBottom: '1px solid #eee'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = '#f0f0f0';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = 'white';
-              }}
+              className="fhir-picker-item"
             >
-              <div style={{ fontWeight: 'bold' }}>
+              <div className="fhir-picker-item-title">
                 {formatPractitionerName(practitioner)}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#666' }}>
+              <div className="fhir-picker-item-subtitle">
                 ID: {practitioner.id}
                 {practitioner.identifier && practitioner.identifier.length > 0 && (
                   <span> • {practitioner.identifier[0].system}: {practitioner.identifier[0].value}</span>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { PractitionerRole } from '@medplum/fhirtypes';
 import { PractitionerPicker } from './PractitionerPicker';
 import { OrganizationPicker } from './OrganizationPicker';
+import '../styles/components.css';
 
 interface PractitionerRoleFormProps {
   initialPractitionerRole?: PractitionerRole;

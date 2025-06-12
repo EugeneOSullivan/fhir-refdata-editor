@@ -1,22 +1,88 @@
 /* FHIR App Design System - Reusable Components */
 
+/* Theme Variables */
+:root {
+  /* Light theme (default) */
+  --fhir-bg-color: #ffffff;
+  --fhir-text-color: #213547;
+  --fhir-form-bg: #f5f5f5;
+  --fhir-form-content-bg: #ffffff;
+  --fhir-border-color: #e0e0e0;
+  --fhir-primary-color: #1a73e8;
+  --fhir-success-color: #4CAF50;
+  --fhir-danger-color: #f44336;
+  --fhir-warning-color: #ff9800;
+  --fhir-info-color: #2196f3;
+  --fhir-input-bg: #ffffff;
+  --fhir-input-border: #d1d5db;
+  --fhir-table-header-bg: #f9fafb;
+  --fhir-table-row-hover: #f3f4f6;
+  --fhir-fieldset-bg: #fafafa;
+  --fhir-shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme */
+.dark-theme {
+  --fhir-bg-color: #1a1a1a;
+  --fhir-text-color: #e6e6e6;
+  --fhir-form-bg: #2a2a2a;
+  --fhir-form-content-bg: #333333;
+  --fhir-border-color: #444444;
+  --fhir-primary-color: #3b91ff;
+  --fhir-success-color: #66bb6a;
+  --fhir-danger-color: #f55a4e;
+  --fhir-warning-color: #ffb74d;
+  --fhir-info-color: #4dabf5;
+  --fhir-input-bg: #2a2a2a;
+  --fhir-input-border: #555555;
+  --fhir-table-header-bg: #2a2a2a;
+  --fhir-table-row-hover: #3a3a3a;
+  --fhir-fieldset-bg: #2a2a2a;
+  --fhir-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
 /* Form Containers */
 @layer components {
+  /* Theme Toggle Button */
+  .fhir-theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--fhir-form-bg);
+    color: var(--fhir-text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: 1px solid var(--fhir-border-color);
+    box-shadow: 0 2px 4px var(--fhir-shadow-color);
+    z-index: 1000;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .fhir-theme-toggle:hover {
+    transform: scale(1.1);
+  }
+
   /* Main form wrapper container - matches SDC form styling */
   .fhir-form-wrapper {
     width: 95%; /* Use 95% of available width */
     margin: 2rem auto; /* More top/bottom margin and center horizontally */
     padding: 1.5rem;
-    background-color: #f5f5f5;
+    background-color: var(--fhir-form-bg);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--fhir-shadow-color);
   }
 
   /* Form header styling */
   .fhir-form-wrapper-header {
     margin-bottom: 1rem;
-    color: #1a73e8;
-    border-bottom: 1px solid #e0e0e0;
+    color: var(--fhir-primary-color);
+    border-bottom: 1px solid var(--fhir-border-color);
     padding-bottom: 0.5rem;
     font-weight: bold;
     font-size: 1.5rem; /* Larger header */
@@ -25,20 +91,20 @@
 
   /* Error message styling for form wrapper */
   .fhir-form-wrapper-error {
-    color: red;
+    color: var(--fhir-danger-color);
     padding: 1rem;
-    background-color: #fff3f3;
-    border: 1px solid #ffcdd2;
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid var(--fhir-danger-color);
     border-radius: 4px;
     margin-bottom: 1rem;
   }
 
   /* White content area for forms */
   .fhir-form-wrapper-content {
-    background-color: white;
+    background-color: var(--fhir-form-content-bg);
     padding: 2rem; /* More padding */
     border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px var(--fhir-shadow-color);
   }
 
   /* Submit button container */
@@ -63,7 +129,7 @@
 
   .fhir-form-submit-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px var(--fhir-shadow-color);
   }
 
   .fhir-form-submit-btn:disabled {
@@ -74,7 +140,7 @@
   }
 
   .fhir-form-submit-btn-create {
-    background-color: #4CAF50;
+    background-color: var(--fhir-success-color);
   }
 
   .fhir-form-submit-btn-create:hover:not(:disabled) {
@@ -82,7 +148,7 @@
   }
 
   .fhir-form-submit-btn-edit {
-    background-color: #1a73e8;
+    background-color: var(--fhir-primary-color);
   }
 
   .fhir-form-submit-btn-edit:hover:not(:disabled) {
@@ -91,16 +157,16 @@
 
   /* Fieldsets and Sections */
   .fhir-fieldset {
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--fhir-border-color);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    background-color: #fafafa;
+    background-color: var(--fhir-fieldset-bg);
   }
 
   .fhir-legend {
     font-weight: bold;
-    color: #374151;
+    color: var(--fhir-text-color);
     padding: 0 0.75rem;
     font-size: 1.1rem;
   }
@@ -109,51 +175,54 @@
   .fhir-input {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    border: 2px solid var(--fhir-input-border);
     border-radius: 6px;
     font-size: 1rem;
     transition: all 0.15s ease-in-out;
-    background-color: white;
+    background-color: var(--fhir-input-bg);
+    color: var(--fhir-text-color);
   }
 
   .fhir-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   .fhir-select {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    border: 2px solid var(--fhir-input-border);
     border-radius: 6px;
     font-size: 1rem;
     transition: all 0.15s ease-in-out;
-    background-color: white;
+    background-color: var(--fhir-input-bg);
+    color: var(--fhir-text-color);
     cursor: pointer;
   }
 
   .fhir-select:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   .fhir-textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    border: 2px solid var(--fhir-input-border);
     border-radius: 6px;
     font-size: 1rem;
     resize: vertical;
     transition: all 0.15s ease-in-out;
-    background-color: white;
+    background-color: var(--fhir-input-bg);
+    color: var(--fhir-text-color);
     min-height: 100px;
   }
 
   .fhir-textarea:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
@@ -161,14 +230,15 @@
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 4px;
-    border: 2px solid #d1d5db;
-    color: #2563eb;
+    border: 2px solid var(--fhir-input-border);
+    color: var(--fhir-primary-color);
     cursor: pointer;
+    background-color: var(--fhir-input-bg);
   }
 
   .fhir-checkbox:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
@@ -177,7 +247,7 @@
     display: block;
     margin-bottom: 0.75rem;
     font-weight: 500;
-    color: #374151;
+    color: var(--fhir-text-color);
     font-size: 1rem;
   }
 
@@ -185,7 +255,7 @@
     display: block;
     margin-bottom: 0.75rem;
     font-weight: bold;
-    color: #1f2937;
+    color: var(--fhir-text-color);
     font-size: 1rem;
   }
 
@@ -194,11 +264,12 @@
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #4b5563;
+    color: var(--fhir-text-color);
   }
 
   .fhir-required {
-    color: #dc2626;
+    color: var(--fhir-danger-color);
+    margin-left: 0.25rem;
   }
 
   /* Buttons */
@@ -206,57 +277,58 @@
     padding: 0.75rem 1.5rem;
     border-radius: 6px;
     font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.15s ease-in-out;
-    border: none;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
   }
 
   .fhir-btn:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   }
 
   .fhir-btn-primary {
-    background-color: #2563eb;
+    background-color: var(--fhir-primary-color);
     color: white;
   }
 
   .fhir-btn-primary:hover:not(:disabled) {
-    background-color: #1d4ed8;
+    background-color: #1557b0;
     transform: translateY(-1px);
   }
 
   .fhir-btn-success {
-    background-color: #10b981;
+    background-color: var(--fhir-success-color);
     color: white;
   }
 
   .fhir-btn-success:hover:not(:disabled) {
-    background-color: #059669;
+    background-color: #45a049;
     transform: translateY(-1px);
   }
 
   .fhir-btn-danger {
-    background-color: #ef4444;
+    background-color: var(--fhir-danger-color);
     color: white;
   }
 
   .fhir-btn-danger:hover:not(:disabled) {
-    background-color: #dc2626;
+    background-color: #d32f2f;
     transform: translateY(-1px);
   }
 
   .fhir-btn-secondary {
-    background-color: #6b7280;
-    color: white;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
   }
 
   .fhir-btn-secondary:hover:not(:disabled) {
-    background-color: #4b5563;
+    background-color: #e5e7eb;
     transform: translateY(-1px);
   }
 
@@ -267,208 +339,378 @@
   }
 
   .fhir-btn-large {
-    padding: 1rem 2rem;
+    padding: 0.875rem 1.75rem;
     font-size: 1.125rem;
     border-radius: 8px;
   }
 
-  .fhir-btn-disabled {
-    opacity: 0.6;
+  .fhir-btn-disabled, 
+  .fhir-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    pointer-events: none;
     transform: none !important;
   }
 
-  /* Improved picker button styling for inline buttons */
-  .fhir-picker-clear-btn {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    padding: 0.375rem;
-    cursor: pointer;
-    color: #6b7280;
-    transition: all 0.15s ease-in-out;
-    display: inline-flex;
+  /* Modal */
+  .fhir-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  .fhir-modal-container {
+    background-color: var(--fhir-form-content-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px var(--fhir-shadow-color);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .fhir-modal-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--fhir-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fhir-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--fhir-text-color);
+    margin: 0;
+  }
+
+  .fhir-modal-close {
+    background: none;
+    border: none;
+    color: var(--fhir-text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fhir-modal-close:hover {
+    color: var(--fhir-danger-color);
+  }
+
+  .fhir-modal-content {
+    padding: 1.5rem;
+  }
+
+  .fhir-modal-footer {
+    padding: 1.25rem;
+    border-top: 1px solid var(--fhir-border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  /* Breadcrumb */
+  .fhir-breadcrumb {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--fhir-form-bg);
+    border-radius: 6px;
+    box-shadow: 0 1px 2px var(--fhir-shadow-color);
+  }
+
+  .fhir-breadcrumb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .fhir-breadcrumb-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .fhir-breadcrumb-separator {
+    margin: 0 0.5rem;
+    color: var(--fhir-text-color);
+    opacity: 0.5;
+  }
+
+  .fhir-breadcrumb-link {
+    color: var(--fhir-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.15s ease-in-out;
+  }
+
+  .fhir-breadcrumb-link:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+
+  .fhir-breadcrumb-current {
+    font-weight: 600;
+    color: var(--fhir-text-color);
+  }
+
+  /* Picker Components */
+  .fhir-picker-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .fhir-picker-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .fhir-picker-clear-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--fhir-text-color);
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 0.25rem;
+    z-index: 2;
   }
 
   .fhir-picker-clear-btn:hover {
-    background: #e5e7eb;
-    color: #374151;
+    opacity: 1;
   }
 
   .fhir-picker-input {
-    padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    width: 100%;
+    padding: 0.75rem 2rem 0.75rem 0.75rem;
+    border: 2px solid var(--fhir-input-border);
     border-radius: 6px;
     font-size: 1rem;
+    background-color: var(--fhir-input-bg);
+    color: var(--fhir-text-color);
     transition: all 0.15s ease-in-out;
-    background-color: white;
-    flex: 1;
   }
 
   .fhir-picker-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
   .fhir-picker-selected {
-    display: flex;
-    align-items: center;
     padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    border: 2px solid var(--fhir-primary-color);
     border-radius: 6px;
-    background-color: #f8f9fa;
-    flex: 1;
-    gap: 0.5rem;
+    background-color: rgba(59, 130, 246, 0.1);
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fhir-picker-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: var(--fhir-form-content-bg);
+    border: 1px solid var(--fhir-border-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 6px var(--fhir-shadow-color);
+    z-index: 10;
+    margin-top: 0.25rem;
+  }
+
+  .fhir-picker-message {
+    padding: 1rem;
+    text-align: center;
+    color: var(--fhir-text-color);
+    opacity: 0.7;
+  }
+
+  .fhir-picker-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--fhir-border-color);
+  }
+
+  .fhir-picker-item:hover {
+    background-color: var(--fhir-table-row-hover);
+  }
+
+  .fhir-picker-item-title {
+    font-weight: 600;
+    color: var(--fhir-text-color);
+  }
+
+  .fhir-picker-item-subtitle {
+    font-size: 0.875rem;
+    color: var(--fhir-text-color);
+    opacity: 0.7;
+    margin-top: 0.25rem;
   }
 
   /* Grid Layouts */
   .fhir-grid-2 {
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   @media (min-width: 768px) {
     .fhir-grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   .fhir-grid-3 {
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   @media (min-width: 768px) {
     .fhir-grid-3 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
     .fhir-grid-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
   .fhir-grid-4 {
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   @media (min-width: 768px) {
     .fhir-grid-4 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
     .fhir-grid-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
-  /* Error Messages */
+  /* Alerts and Notifications */
   .fhir-error {
-    color: #dc2626;
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid var(--fhir-danger-color);
+    color: var(--fhir-danger-color);
     padding: 1rem;
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     margin-bottom: 1rem;
   }
 
   .fhir-success {
-    color: #059669;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--fhir-success-color);
+    color: var(--fhir-success-color);
     padding: 1rem;
-    background-color: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     margin-bottom: 1rem;
   }
 
   .fhir-warning {
-    color: #d97706;
+    background-color: rgba(255, 152, 0, 0.1);
+    border-left: 4px solid var(--fhir-warning-color);
+    color: var(--fhir-warning-color);
     padding: 1rem;
-    background-color: #fffbeb;
-    border: 1px solid #fed7aa;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     margin-bottom: 1rem;
   }
 
   .fhir-info {
-    color: #2563eb;
+    background-color: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid var(--fhir-info-color);
+    color: var(--fhir-info-color);
     padding: 1rem;
-    background-color: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 0.375rem;
+    border-radius: 4px;
     margin-bottom: 1rem;
   }
 
-  /* Dynamic Sections (for repeating fields) */
+  /* Dynamic Sections */
   .fhir-dynamic-section {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--fhir-border-color);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-    background-color: #f9fafb;
+    background-color: var(--fhir-form-bg);
   }
 
+  /* Dynamic Grid Layouts */
   .fhir-dynamic-grid {
     display: grid;
     gap: 1rem;
-    align-items: end;
   }
 
   .fhir-dynamic-grid-2 {
     display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
-    align-items: end;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    width: 100%;
   }
 
   @media (min-width: 768px) {
     .fhir-dynamic-grid-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   .fhir-dynamic-grid-3 {
     display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
-    align-items: end;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    width: 100%;
   }
 
   @media (min-width: 768px) {
     .fhir-dynamic-grid-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
   .fhir-dynamic-grid-4 {
     display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
-    align-items: end;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    width: 100%;
   }
 
   @media (min-width: 640px) {
     .fhir-dynamic-grid-4 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
     .fhir-dynamic-grid-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
@@ -482,106 +724,106 @@
   }
 
   .fhir-small-spacing {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
-  /* List Views */
+  /* List Container */
   .fhir-list-container {
-    width: 95%;
-    margin: 0 auto;
-    padding: 1rem;
+    border: 1px solid var(--fhir-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
   }
 
+  /* Table */
   .fhir-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    color: var(--fhir-text-color);
   }
 
   .fhir-table-header {
-    background-color: #f9fafb;
-    padding: 0.75rem 1rem;
-    text-align: left;
+    background-color: var(--fhir-table-header-bg);
     font-weight: 600;
-    color: #374151;
-    border-bottom: 2px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--fhir-border-color);
   }
 
   .fhir-table-cell {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--fhir-border-color);
     vertical-align: top;
   }
 
   .fhir-table-row:hover {
-    background-color: #f9fafb;
+    background-color: var(--fhir-table-row-hover);
   }
 
-  /* Search and Filters */
+  /* Search */
   .fhir-search-container {
     margin-bottom: 1.5rem;
-    padding: 1rem;
-    background-color: #f9fafb;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .fhir-search-input {
-    width: 100%;
+    flex: 1;
     padding: 0.75rem;
-    border: 2px solid #d1d5db;
+    border: 2px solid var(--fhir-input-border);
     border-radius: 6px;
     font-size: 1rem;
     transition: all 0.15s ease-in-out;
-    background-color: white;
+    background-color: var(--fhir-input-bg);
+    color: var(--fhir-text-color);
   }
 
   .fhir-search-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--fhir-primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 
-  /* Status Badges */
+  /* Badges */
   .fhir-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .fhir-badge-active {
-    background-color: #dcfce7;
-    color: #166534;
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--fhir-success-color);
   }
 
   .fhir-badge-inactive {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: rgba(158, 158, 158, 0.1);
+    color: #9e9e9e;
   }
 
   .fhir-badge-suspended {
-    background-color: #fef3c7;
-    color: #92400e;
+    background-color: rgba(255, 152, 0, 0.1);
+    color: var(--fhir-warning-color);
   }
 
-  /* Loading States */
+  /* Loading State */
   .fhir-loading {
     text-align: center;
-    padding: 3rem 0;
-    color: #6b7280;
-    font-size: 1.1rem;
+    padding: 2rem;
+    color: var(--fhir-text-color);
+    opacity: 0.7;
   }
 
+  /* Empty State */
   .fhir-empty {
     text-align: center;
-    padding: 3rem 0;
-    color: #9ca3af;
-    font-size: 1.1rem;
+    padding: 2rem;
+    color: var(--fhir-text-color);
+    opacity: 0.7;
   }
 }

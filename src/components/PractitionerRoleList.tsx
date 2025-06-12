@@ -3,119 +3,12 @@ import type { PractitionerRole, Bundle, OperationOutcome, Practitioner } from '@
 import { getFhirUrl } from '../fhirClient';
 import { debounce } from 'lodash';
 import { PractitionerPicker } from './PractitionerPicker';
+import '../styles/components.css';
 
 interface PractitionerRoleListProps {
   onSelectPractitionerRole: (practitionerRole: PractitionerRole) => void;
   onCreateNewWithPractitioner?: (practitioner: Practitioner) => void;
 }
-
-// Shared styles for consistent design
-const containerStyle = {
-  maxWidth: 'none',
-  width: '95%',
-  margin: '0 auto',
-  padding: '2rem',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-};
-
-const searchContainerStyle = {
-  marginBottom: '2rem',
-  padding: '1.5rem',
-  backgroundColor: '#f8f9fa',
-  borderRadius: '8px',
-  border: '1px solid #e9ecef'
-};
-
-const searchInputStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  fontSize: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #ced4da',
-  outline: 'none',
-  transition: 'all 0.15s ease-in-out'
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse' as const,
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-};
-
-const thStyle = {
-  backgroundColor: '#f8f9fa',
-  padding: '1rem',
-  textAlign: 'left' as const,
-  fontWeight: '600',
-  color: '#495057',
-  borderBottom: '2px solid #e9ecef'
-};
-
-const tdStyle = {
-  padding: '1rem',
-  borderBottom: '1px solid #e9ecef',
-  verticalAlign: 'top' as const
-};
-
-const buttonStyle = {
-  padding: '0.5rem 1rem',
-  fontSize: '0.875rem',
-  fontWeight: '500',
-  borderRadius: '4px',
-  border: 'none',
-  cursor: 'pointer',
-  transition: 'all 0.15s ease-in-out',
-  backgroundColor: '#007bff',
-  color: 'white'
-};
-
-const createButtonStyle = {
-  ...buttonStyle,
-  backgroundColor: '#28a745',
-  marginLeft: '0.5rem'
-};
-
-const paginationStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: '2rem',
-  padding: '1rem 0'
-};
-
-const errorStyle = {
-  backgroundColor: '#f8d7da',
-  color: '#721c24',
-  padding: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #f5c6cb',
-  marginBottom: '1.5rem'
-};
-
-const loadingStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1.1rem'
-};
-
-const emptyStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1rem'
-};
-
-const filtersStyle = {
-  display: 'flex',
-  gap: '1rem',
-  marginBottom: '1rem',
-  alignItems: 'center',
-  flexWrap: 'wrap' as const
-};
 
 export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWithPractitioner }: PractitionerRoleListProps) {
   const [practitionerRoles, setPractitionerRoles] = useState<PractitionerRole[]>([]);
@@ -228,7 +121,7 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
     setLoading(true);
     setError(null);
     try {
-      let path = `PractitionerRole?_count=${pageSize}&_getpagesoffset=${offset}&practitioner=${encodeURIComponent(practitionerRef)}`;
+      const path = `PractitionerRole?practitioner=${encodeURIComponent(practitionerRef)}&_count=${pageSize}&_getpagesoffset=${offset}`;
       const url = getFhirUrl(path);
       const response = await fetch(url);
       if (!response.ok) {
@@ -263,8 +156,8 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
         if (!response.ok) {
           throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<PractitionerRole | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
@@ -291,8 +184,8 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
         if (!response.ok) {
           throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<PractitionerRole | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
@@ -312,9 +205,9 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
   };
 
   const handlePractitionerChange = (reference: string | undefined, practitioner: Practitioner | undefined) => {
-    setSelectedPractitioner(practitioner);
     setPractitionerReference(reference || '');
-    setSearchTerm(''); // Clear search when filtering by practitioner
+    setSelectedPractitioner(practitioner);
+    setSearchTerm('');
   };
 
   const handleCreateNewForPractitioner = () => {
@@ -323,150 +216,130 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
     }
   };
 
-
-
   const formatCodes = (codes: any[] | undefined) => {
-    if (!codes || codes.length === 0) return 'N/A';
-    return codes
-      .map(code => code.coding?.[0]?.display || code.text || 'Unknown')
-      .join(', ');
+    if (!codes || codes.length === 0) return 'Not specified';
+    return codes.map(code => 
+      code.coding?.[0]?.display || code.text || 'Unknown'
+    ).join(', ');
   };
 
   const formatPractitionerName = (practitionerRef: string | undefined) => {
-    if (!practitionerRef) return 'N/A';
-    // Extract ID from reference
-    const id = practitionerRef.split('/').pop();
-    return `Practitioner/${id}`;
+    if (!practitionerRef) return 'Not specified';
+    return practitionerRef.replace('Practitioner/', '');
+  };
+
+  const formatOrganizationName = (organizationRef: string | undefined) => {
+    if (!organizationRef) return 'Not specified';
+    return organizationRef.replace('Organization/', '');
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={searchContainerStyle}>
-        <div style={filtersStyle}>
-          <div style={{ flex: 1 }}>
-            <PractitionerPicker
-              value={practitionerReference}
-              onChange={handlePractitionerChange}
-              placeholder="Filter by practitioner..."
-            />
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">Practitioner Roles</h2>
+
+      <div className="fhir-form-wrapper-content">
+        <div className="fhir-search-container">
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1' }}>
+              <label className="fhir-label-small">Filter by Practitioner</label>
+              <PractitionerPicker 
+                value={practitionerReference} 
+                onChange={handlePractitionerChange}
+                placeholder="Search for a practitioner to filter roles..."
+              />
+            </div>
+            {selectedPractitioner && onCreateNewWithPractitioner && (
+              <div style={{ alignSelf: 'flex-end' }}>
+                <button 
+                  className="fhir-btn fhir-btn-success"
+                  onClick={handleCreateNewForPractitioner}
+                >
+                  Create New Role
+                </button>
+              </div>
+            )}
           </div>
-          {selectedPractitioner && onCreateNewWithPractitioner && (
-            <button
-              style={createButtonStyle}
-              onClick={handleCreateNewForPractitioner}
-              onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#1e7e34'}
-              onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#28a745'}
-            >
-              Create Role for {selectedPractitioner.name?.[0]?.family || 'Practitioner'}
-            </button>
+
+          {!practitionerReference && (
+            <div className="fhir-field-spacing">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by identifier..."
+                className="fhir-search-input"
+              />
+            </div>
           )}
         </div>
 
-        {!practitionerReference && (
-          <input
-            type="text"
-            placeholder="Search by identifier..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={searchInputStyle}
-            onFocus={(e) => e.target.style.borderColor = '#007bff'}
-            onBlur={(e) => e.target.style.borderColor = '#ced4da'}
-          />
+        {error && <div className="fhir-error">{error}</div>}
+
+        {loading ? (
+          <div className="fhir-loading">Loading practitioner roles...</div>
+        ) : practitionerRoles.length === 0 ? (
+          <div className="fhir-empty">
+            {practitionerReference 
+              ? "No roles found for this practitioner" 
+              : "No practitioner roles found"}
+          </div>
+        ) : (
+          <>
+            <table className="fhir-table">
+              <thead>
+                <tr>
+                  <th className="fhir-table-header">Practitioner</th>
+                  <th className="fhir-table-header">Organization</th>
+                  <th className="fhir-table-header">Role</th>
+                  <th className="fhir-table-header">Specialty</th>
+                  <th className="fhir-table-header">Status</th>
+                  <th className="fhir-table-header">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {practitionerRoles.map((role) => (
+                  <tr key={role.id} className="fhir-table-row">
+                    <td className="fhir-table-cell">{formatPractitionerName(role.practitioner?.reference)}</td>
+                    <td className="fhir-table-cell">{formatOrganizationName(role.organization?.reference)}</td>
+                    <td className="fhir-table-cell">{formatCodes(role.code)}</td>
+                    <td className="fhir-table-cell">{formatCodes(role.specialty)}</td>
+                    <td className="fhir-table-cell">
+                      <span className={`fhir-badge ${role.active !== false ? 'fhir-badge-active' : 'fhir-badge-inactive'}`}>
+                        {role.active !== false ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="fhir-table-cell">
+                      <button 
+                        className="fhir-btn fhir-btn-primary"
+                        onClick={() => onSelectPractitionerRole(role)}
+                      >
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="fhir-section-spacing" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handlePrevPage}
+                disabled={!prevPageUrl}
+              >
+                Previous
+              </button>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handleNextPage}
+                disabled={!nextPageUrl}
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
-
-      {error && (
-        <div style={errorStyle}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div style={loadingStyle}>
-          Loading practitioner roles...
-        </div>
-      ) : practitionerRoles.length === 0 ? (
-        <div style={emptyStyle}>
-          No practitioner roles found.
-        </div>
-      ) : (
-        <>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Practitioner</th>
-                <th style={thStyle}>Codes</th>
-                <th style={thStyle}>Specialties</th>
-                <th style={thStyle}>Organization</th>
-                <th style={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {practitionerRoles.map((role, index) => (
-                <tr key={role.id || index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa' }}>
-                  <td style={tdStyle}>
-                    <strong>{formatPractitionerName(role.practitioner?.reference)}</strong>
-                  </td>
-                  <td style={tdStyle}>
-                    {formatCodes(role.code)}
-                  </td>
-                  <td style={tdStyle}>
-                    {formatCodes(role.specialty)}
-                  </td>
-                  <td style={tdStyle}>
-                    <small style={{ color: '#6c757d' }}>
-                      {role.organization?.reference ? 
-                        role.organization.reference.split('/').pop() : 'N/A'}
-                    </small>
-                  </td>
-                  <td style={tdStyle}>
-                    <button
-                      style={buttonStyle}
-                      onClick={() => onSelectPractitionerRole(role)}
-                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#0056b3'}
-                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#007bff'}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div style={paginationStyle}>
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: prevPageUrl ? '#6c757d' : '#e9ecef',
-                color: prevPageUrl ? 'white' : '#adb5bd',
-                cursor: prevPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handlePrevPage}
-              disabled={!prevPageUrl}
-            >
-              Previous
-            </button>
-            
-            <span style={{ color: '#6c757d' }}>
-              {practitionerRoles.length} practitioner roles
-            </span>
-            
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: nextPageUrl ? '#6c757d' : '#e9ecef',
-                color: nextPageUrl ? 'white' : '#adb5bd',
-                cursor: nextPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handleNextPage}
-              disabled={!nextPageUrl}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 } 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Location } from '@medplum/fhirtypes';
 import { OrganizationPicker } from './OrganizationPicker';
+import '../styles/components.css';
 
 interface LocationFormProps {
   initialLocation?: Location;

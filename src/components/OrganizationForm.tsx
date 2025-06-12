@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Organization } from '@medplum/fhirtypes';
 import { OrganizationPicker } from './OrganizationPicker';
+import '../styles/components.css';
 
 interface OrganizationFormProps {
   initialOrganization?: Organization;

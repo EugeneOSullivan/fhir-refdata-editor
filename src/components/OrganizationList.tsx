@@ -2,125 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import type { Organization, Identifier, Bundle, OperationOutcome } from '@medplum/fhirtypes';
 import { getFhirUrl } from '../fhirClient';
 import { debounce } from 'lodash';
+import '../styles/components.css';
 
 interface OrganizationListProps {
   onSelectOrganization: (organization: Organization) => void;
 }
-
-// Shared styles for consistent design
-const containerStyle = {
-  maxWidth: 'none',
-  width: '95%',
-  margin: '0 auto',
-  padding: '2rem',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-};
-
-const searchContainerStyle = {
-  marginBottom: '2rem',
-  padding: '1.5rem',
-  backgroundColor: '#f8f9fa',
-  borderRadius: '8px',
-  border: '1px solid #e9ecef'
-};
-
-const searchInputStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  fontSize: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #ced4da',
-  outline: 'none',
-  transition: 'all 0.15s ease-in-out'
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse' as const,
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-};
-
-const thStyle = {
-  backgroundColor: '#f8f9fa',
-  padding: '1rem',
-  textAlign: 'left' as const,
-  fontWeight: '600',
-  color: '#495057',
-  borderBottom: '2px solid #e9ecef'
-};
-
-const tdStyle = {
-  padding: '1rem',
-  borderBottom: '1px solid #e9ecef',
-  verticalAlign: 'top' as const
-};
-
-const buttonStyle = {
-  padding: '0.5rem 1rem',
-  fontSize: '0.875rem',
-  fontWeight: '500',
-  borderRadius: '4px',
-  border: 'none',
-  cursor: 'pointer',
-  transition: 'all 0.15s ease-in-out',
-  backgroundColor: '#007bff',
-  color: 'white'
-};
-
-const paginationStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: '2rem',
-  padding: '1rem 0'
-};
-
-const errorStyle = {
-  backgroundColor: '#f8d7da',
-  color: '#721c24',
-  padding: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #f5c6cb',
-  marginBottom: '1.5rem'
-};
-
-const loadingStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1.1rem'
-};
-
-const emptyStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1rem'
-};
-
-const badgeStyle = {
-  padding: '0.25rem 0.5rem',
-  fontSize: '0.75rem',
-  fontWeight: '500',
-  borderRadius: '4px',
-  textTransform: 'uppercase' as const
-};
-
-const getStatusBadgeColor = (status: string | undefined) => {
-  switch (status) {
-    case 'active':
-      return { backgroundColor: '#d4edda', color: '#155724' };
-    case 'inactive':
-      return { backgroundColor: '#f8d7da', color: '#721c24' };
-    case 'suspended':
-      return { backgroundColor: '#fff3cd', color: '#856404' };
-    default:
-      return { backgroundColor: '#e2e3e5', color: '#6c757d' };
-  }
-};
 
 export function OrganizationList({ onSelectOrganization }: OrganizationListProps) {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -245,8 +131,8 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
         if (!response.ok) {
           throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<Organization | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
@@ -273,8 +159,8 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
         if (!response.ok) {
           throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<Organization | OperationOutcome>;
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
           const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
@@ -295,123 +181,97 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
 
   const formatIdentifiers = (identifiers: Identifier[] | undefined) => {
     if (!identifiers || identifiers.length === 0) return 'None';
-    return identifiers
-      .map(id => `${id.system || 'N/A'}: ${id.value || 'N/A'}`)
-      .join(', ');
+    return identifiers.map(id => {
+      const system = id.system ? `${id.system}: ` : '';
+      return `${system}${id.value || 'Unknown'}`;
+    }).join(', ');
   };
 
   const formatType = (types: any[] | undefined) => {
-    if (!types || types.length === 0) return 'N/A';
-    return types
-      .map(type => type.coding?.[0]?.display || type.text || 'Unknown')
-      .join(', ');
+    if (!types || types.length === 0) return 'Not specified';
+    const type = types[0];
+    if (type.coding && type.coding.length > 0) {
+      return type.coding[0].display || type.coding[0].code || 'Unknown';
+    }
+    return 'Not specified';
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={searchContainerStyle}>
-        <input
-          type="text"
-          placeholder="Search by identifier or name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={searchInputStyle}
-          onFocus={(e) => e.target.style.borderColor = '#007bff'}
-          onBlur={(e) => e.target.style.borderColor = '#ced4da'}
-        />
-      </div>
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">Organizations</h2>
 
-      {error && (
-        <div style={errorStyle}>
-          <strong>Error:</strong> {error}
+      <div className="fhir-form-wrapper-content">
+        <div className="fhir-search-container">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by name or identifier..."
+            className="fhir-search-input"
+          />
         </div>
-      )}
 
-      {loading ? (
-        <div style={loadingStyle}>
-          Loading organizations...
-        </div>
-      ) : organizations.length === 0 ? (
-        <div style={emptyStyle}>
-          No organizations found.
-        </div>
-      ) : (
-        <>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>Type</th>
-                <th style={thStyle}>Identifiers</th>
-                <th style={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {organizations.map((organization, index) => (
-                <tr key={organization.id || index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa' }}>
-                  <td style={tdStyle}>
-                    <strong>{organization.name || 'Unnamed Organization'}</strong>
-                  </td>
-                  <td style={tdStyle}>
-                    <span style={{...badgeStyle, ...getStatusBadgeColor(organization.active ? 'active' : 'inactive')}}>
-                      {organization.active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td style={tdStyle}>
-                    {formatType(organization.type)}
-                  </td>
-                  <td style={tdStyle}>
-                    <small style={{ color: '#6c757d' }}>{formatIdentifiers(organization.identifier)}</small>
-                  </td>
-                  <td style={tdStyle}>
-                    <button
-                      style={buttonStyle}
-                      onClick={() => onSelectOrganization(organization)}
-                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#0056b3'}
-                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#007bff'}
-                    >
-                      Edit
-                    </button>
-                  </td>
+        {error && <div className="fhir-error">{error}</div>}
+
+        {loading ? (
+          <div className="fhir-loading">Loading organizations...</div>
+        ) : organizations.length === 0 ? (
+          <div className="fhir-empty">No organizations found</div>
+        ) : (
+          <>
+            <table className="fhir-table">
+              <thead>
+                <tr>
+                  <th className="fhir-table-header">Name</th>
+                  <th className="fhir-table-header">Type</th>
+                  <th className="fhir-table-header">Identifiers</th>
+                  <th className="fhir-table-header">Status</th>
+                  <th className="fhir-table-header">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {organizations.map((organization) => (
+                  <tr key={organization.id} className="fhir-table-row">
+                    <td className="fhir-table-cell">{organization.name || 'Unnamed'}</td>
+                    <td className="fhir-table-cell">{formatType(organization.type)}</td>
+                    <td className="fhir-table-cell">{formatIdentifiers(organization.identifier)}</td>
+                    <td className="fhir-table-cell">
+                      <span className={`fhir-badge ${organization.active ? 'fhir-badge-active' : 'fhir-badge-inactive'}`}>
+                        {organization.active !== false ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="fhir-table-cell">
+                      <button 
+                        className="fhir-btn fhir-btn-primary"
+                        onClick={() => onSelectOrganization(organization)}
+                      >
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <div style={paginationStyle}>
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: prevPageUrl ? '#6c757d' : '#e9ecef',
-                color: prevPageUrl ? 'white' : '#adb5bd',
-                cursor: prevPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handlePrevPage}
-              disabled={!prevPageUrl}
-            >
-              Previous
-            </button>
-            
-            <span style={{ color: '#6c757d' }}>
-              {organizations.length} organizations
-            </span>
-            
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: nextPageUrl ? '#6c757d' : '#e9ecef',
-                color: nextPageUrl ? 'white' : '#adb5bd',
-                cursor: nextPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handleNextPage}
-              disabled={!nextPageUrl}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+            <div className="fhir-section-spacing" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handlePrevPage}
+                disabled={!prevPageUrl}
+              >
+                Previous
+              </button>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handleNextPage}
+                disabled={!nextPageUrl}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 } 

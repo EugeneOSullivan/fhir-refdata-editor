@@ -2,104 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import type { Practitioner, Identifier, Bundle, OperationOutcome } from '@medplum/fhirtypes';
 import { getFhirUrl } from '../fhirClient';
 import { debounce } from 'lodash';
+import '../styles/components.css';
 
 interface PractitionerListProps {
   onSelectPractitioner: (practitioner: Practitioner) => void;
 }
-
-// Shared styles for consistent design
-const containerStyle = {
-  maxWidth: 'none',
-  width: '95%',
-  margin: '0 auto',
-  padding: '2rem',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-};
-
-const searchContainerStyle = {
-  marginBottom: '2rem',
-  padding: '1.5rem',
-  backgroundColor: '#f8f9fa',
-  borderRadius: '8px',
-  border: '1px solid #e9ecef'
-};
-
-const searchInputStyle = {
-  width: '100%',
-  padding: '0.75rem',
-  fontSize: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #ced4da',
-  outline: 'none',
-  transition: 'all 0.15s ease-in-out'
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse' as const,
-  backgroundColor: 'white',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-};
-
-const thStyle = {
-  backgroundColor: '#f8f9fa',
-  padding: '1rem',
-  textAlign: 'left' as const,
-  fontWeight: '600',
-  color: '#495057',
-  borderBottom: '2px solid #e9ecef'
-};
-
-const tdStyle = {
-  padding: '1rem',
-  borderBottom: '1px solid #e9ecef',
-  verticalAlign: 'top' as const
-};
-
-const buttonStyle = {
-  padding: '0.5rem 1rem',
-  fontSize: '0.875rem',
-  fontWeight: '500',
-  borderRadius: '4px',
-  border: 'none',
-  cursor: 'pointer',
-  transition: 'all 0.15s ease-in-out',
-  backgroundColor: '#007bff',
-  color: 'white'
-};
-
-const paginationStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: '2rem',
-  padding: '1rem 0'
-};
-
-const errorStyle = {
-  backgroundColor: '#f8d7da',
-  color: '#721c24',
-  padding: '1rem',
-  borderRadius: '6px',
-  border: '1px solid #f5c6cb',
-  marginBottom: '1.5rem'
-};
-
-const loadingStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1.1rem'
-};
-
-const emptyStyle = {
-  textAlign: 'center' as const,
-  padding: '3rem',
-  color: '#6c757d',
-  fontSize: '1rem'
-};
 
 export function PractitionerList({ onSelectPractitioner }: PractitionerListProps) {
   const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
@@ -248,9 +155,9 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         if (!response.ok) {
           throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<Practitioner | OperationOutcome>;
           
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
@@ -282,9 +189,9 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
         if (!response.ok) {
           throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
-        
-        if ('resourceType' in data && data.resourceType === 'Bundle') {
+
+        const data: unknown = await response.json();
+        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
           const bundle = data as Bundle<Practitioner | OperationOutcome>;
           
           const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
@@ -309,124 +216,92 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
   };
 
   const formatName = (practitioner: Practitioner) => {
-    if (!practitioner.name || practitioner.name.length === 0) return 'Unknown';
-    const name = practitioner.name[0];
-    const parts = [];
-    if (name.given) parts.push(name.given.join(' '));
-    if (name.family) parts.push(name.family);
-    return parts.join(' ') || 'Unknown';
+    const name = practitioner.name?.[0];
+    if (!name) return 'Unknown';
+    
+    const given = name.given?.join(' ') || '';
+    const family = name.family || '';
+    
+    return `${given} ${family}`.trim() || 'Unknown';
   };
 
   const formatIdentifiers = (identifiers: Identifier[] | undefined) => {
     if (!identifiers || identifiers.length === 0) return 'None';
-    return identifiers
-      .map(id => `${id.system || 'N/A'}: ${id.value || 'N/A'}`)
-      .join(', ');
+    
+    return identifiers.map(id => {
+      const system = id.system ? `${id.system}: ` : '';
+      return `${system}${id.value || 'Unknown'}`;
+    }).join(', ');
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={searchContainerStyle}>
-        <input
-          type="text"
-          placeholder="Search by identifier or family name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={searchInputStyle}
-          onFocus={(e) => e.target.style.borderColor = '#007bff'}
-          onBlur={(e) => e.target.style.borderColor = '#ced4da'}
-        />
-      </div>
+    <div className="fhir-form-wrapper">
+      <h2 className="fhir-form-wrapper-header">Practitioners</h2>
 
-      {error && (
-        <div style={errorStyle}>
-          <strong>Error:</strong> {error}
+      <div className="fhir-form-wrapper-content">
+        <div className="fhir-search-container">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by identifier or name..."
+            className="fhir-search-input"
+          />
         </div>
-      )}
 
-      {loading ? (
-        <div style={loadingStyle}>
-          Loading practitioners...
-        </div>
-      ) : practitioners.length === 0 ? (
-        <div style={emptyStyle}>
-          No practitioners found.
-        </div>
-      ) : (
-        <>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Identifiers</th>
-                <th style={thStyle}>Gender</th>
-                <th style={thStyle}>Birth Date</th>
-                <th style={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {practitioners.map((practitioner, index) => (
-                <tr key={practitioner.id || index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa' }}>
-                  <td style={tdStyle}>
-                    <strong>{formatName(practitioner)}</strong>
-                  </td>
-                  <td style={tdStyle}>
-                    <small style={{ color: '#6c757d' }}>{formatIdentifiers(practitioner.identifier)}</small>
-                  </td>
-                  <td style={tdStyle}>
-                    {practitioner.gender || 'N/A'}
-                  </td>
-                  <td style={tdStyle}>
-                    {practitioner.birthDate || 'N/A'}
-                  </td>
-                  <td style={tdStyle}>
-                    <button
-                      style={buttonStyle}
-                      onClick={() => onSelectPractitioner(practitioner)}
-                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#0056b3'}
-                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#007bff'}
-                    >
-                      Edit
-                    </button>
-                  </td>
+        {error && <div className="fhir-error">{error}</div>}
+
+        {loading ? (
+          <div className="fhir-loading">Loading practitioners...</div>
+        ) : practitioners.length === 0 ? (
+          <div className="fhir-empty">No practitioners found</div>
+        ) : (
+          <>
+            <table className="fhir-table">
+              <thead>
+                <tr>
+                  <th className="fhir-table-header">Name</th>
+                  <th className="fhir-table-header">Identifiers</th>
+                  <th className="fhir-table-header">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {practitioners.map((practitioner) => (
+                  <tr key={practitioner.id} className="fhir-table-row">
+                    <td className="fhir-table-cell">{formatName(practitioner)}</td>
+                    <td className="fhir-table-cell">{formatIdentifiers(practitioner.identifier)}</td>
+                    <td className="fhir-table-cell">
+                      <button 
+                        className="fhir-btn fhir-btn-primary"
+                        onClick={() => onSelectPractitioner(practitioner)}
+                      >
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <div style={paginationStyle}>
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: prevPageUrl ? '#6c757d' : '#e9ecef',
-                color: prevPageUrl ? 'white' : '#adb5bd',
-                cursor: prevPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handlePrevPage}
-              disabled={!prevPageUrl}
-            >
-              Previous
-            </button>
-            
-            <span style={{ color: '#6c757d' }}>
-              {practitioners.length} practitioners
-            </span>
-            
-            <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: nextPageUrl ? '#6c757d' : '#e9ecef',
-                color: nextPageUrl ? 'white' : '#adb5bd',
-                cursor: nextPageUrl ? 'pointer' : 'not-allowed'
-              }}
-              onClick={handleNextPage}
-              disabled={!nextPageUrl}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+            <div className="fhir-section-spacing" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handlePrevPage}
+                disabled={!prevPageUrl}
+              >
+                Previous
+              </button>
+              <button 
+                className="fhir-btn fhir-btn-secondary"
+                onClick={handleNextPage}
+                disabled={!nextPageUrl}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 } 
