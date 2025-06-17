@@ -125,6 +125,7 @@
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     min-width: 200px;
+    background-color: transparent !important;
   }
 
   .fhir-form-submit-btn:hover {
@@ -140,19 +141,19 @@
   }
 
   .fhir-form-submit-btn-create {
-    background-color: var(--fhir-success-color);
+    background-color: var(--fhir-success-color) !important;
   }
 
   .fhir-form-submit-btn-create:hover:not(:disabled) {
-    background-color: #45a049;
+    background-color: #45a049 !important;
   }
 
   .fhir-form-submit-btn-edit {
-    background-color: var(--fhir-primary-color);
+    background-color: var(--fhir-primary-color) !important;
   }
 
   .fhir-form-submit-btn-edit:hover:not(:disabled) {
-    background-color: #1557b0;
+    background-color: #1557b0 !important;
   }
 
   /* Fieldsets and Sections */
@@ -284,6 +285,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    background-color: transparent !important;
   }
 
   .fhir-btn:focus {
@@ -292,43 +294,43 @@
   }
 
   .fhir-btn-primary {
-    background-color: var(--fhir-primary-color);
+    background-color: var(--fhir-primary-color) !important;
     color: white;
   }
 
   .fhir-btn-primary:hover:not(:disabled) {
-    background-color: #1557b0;
+    background-color: #1557b0 !important;
     transform: translateY(-1px);
   }
 
   .fhir-btn-success {
-    background-color: var(--fhir-success-color);
+    background-color: var(--fhir-success-color) !important;
     color: white;
   }
 
   .fhir-btn-success:hover:not(:disabled) {
-    background-color: #45a049;
+    background-color: #45a049 !important;
     transform: translateY(-1px);
   }
 
   .fhir-btn-danger {
-    background-color: var(--fhir-danger-color);
+    background-color: var(--fhir-danger-color) !important;
     color: white;
   }
 
   .fhir-btn-danger:hover:not(:disabled) {
-    background-color: #d32f2f;
+    background-color: #d32f2f !important;
     transform: translateY(-1px);
   }
 
   .fhir-btn-secondary {
-    background-color: #f3f4f6;
+    background-color: #f3f4f6 !important;
     color: #4b5563;
     border: 1px solid #d1d5db;
   }
 
   .fhir-btn-secondary:hover:not(:disabled) {
-    background-color: #e5e7eb;
+    background-color: #e5e7eb !important;
     transform: translateY(-1px);
   }
 

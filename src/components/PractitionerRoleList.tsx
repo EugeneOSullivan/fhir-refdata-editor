@@ -310,7 +310,7 @@ export function PractitionerRoleList({ onSelectPractitionerRole, onCreateNewWith
                     </td>
                     <td className="fhir-table-cell">
                       <button 
-                        className="fhir-btn fhir-btn-primary"
+                        className="fhir-btn fhir-btn-success"
                         onClick={() => onSelectPractitionerRole(role)}
                       >
                         Select

@@ -242,7 +242,7 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
                     </td>
                     <td className="fhir-table-cell">
                       <button 
-                        className="fhir-btn fhir-btn-primary"
+                        className="fhir-btn fhir-btn-success"
                         onClick={() => onSelectOrganization(organization)}
                       >
                         Select

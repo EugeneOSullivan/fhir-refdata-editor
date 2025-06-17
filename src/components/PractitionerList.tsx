@@ -272,7 +272,7 @@ export function PractitionerList({ onSelectPractitioner }: PractitionerListProps
                     <td className="fhir-table-cell">{formatIdentifiers(practitioner.identifier)}</td>
                     <td className="fhir-table-cell">
                       <button 
-                        className="fhir-btn fhir-btn-primary"
+                        className="fhir-btn fhir-btn-success"
                         onClick={() => onSelectPractitioner(practitioner)}
                       >
                         Select

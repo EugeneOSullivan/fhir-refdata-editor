@@ -235,7 +235,7 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
                     </td>
                     <td className="fhir-table-cell">
                       <button 
-                        className="fhir-btn fhir-btn-primary"
+                        className="fhir-btn fhir-btn-success"
                         onClick={() => onSelectLocation(location)}
                       >
                         Select
