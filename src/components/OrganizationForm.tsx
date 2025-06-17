@@ -153,7 +153,7 @@ export function OrganizationForm({ initialOrganization, onSave, isCreating = fal
       const validTelecoms = telecoms.filter(t => t.value.trim());
       if (validTelecoms.length > 0) {
         organization.telecom = validTelecoms.map(t => ({
-          system: t.system as any || undefined,
+          system: t.system as 'phone' | 'fax' | 'email' | 'url' | undefined,
           value: t.value
         }));
       }

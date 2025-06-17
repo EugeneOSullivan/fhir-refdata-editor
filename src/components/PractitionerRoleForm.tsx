@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { PractitionerRole } from '@medplum/fhirtypes';
+import type { PractitionerRole, Practitioner } from '@medplum/fhirtypes';
 import { PractitionerPicker } from './PractitionerPicker';
 import { OrganizationPicker } from './OrganizationPicker';
 import '../styles/components.css';
@@ -8,7 +8,7 @@ interface PractitionerRoleFormProps {
   initialPractitionerRole?: PractitionerRole;
   onSave: (practitionerRole: PractitionerRole) => Promise<PractitionerRole>;
   isCreating?: boolean;
-  preSelectedPractitioner?: any;
+  preSelectedPractitioner?: Practitioner;
 }
 
 export function PractitionerRoleForm({ initialPractitionerRole, onSave, isCreating = false, preSelectedPractitioner }: PractitionerRoleFormProps) {

@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
-import type { Location, Bundle, OperationOutcome } from '@medplum/fhirtypes';
-import { getFhirUrl } from '../fhirClient';
-import { debounce } from 'lodash';
+import { useState, useEffect, useCallback } from 'react';
+import type { Location, Bundle } from '@medplum/fhirtypes';
+import { fhirClient } from '../fhirClient';
+import { LoadingSkeleton } from './LoadingSkeleton';
+import type { SelectionHandler } from '../types/fhir';
 import '../styles/components.css';
 
 interface LocationListProps {
-  onSelectLocation: (location: Location) => void;
+  onSelectLocation: SelectionHandler<Location>;
 }
 
 export function LocationList({ onSelectLocation }: LocationListProps) {
@@ -15,179 +16,93 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
   const [prevPageUrl, setPrevPageUrl] = useState<string | null>(null);
-  const pageSize = 10;
 
-  // Debounce search term changes
-  const debouncedSearch = useMemo(
-    () => debounce(async (term: string) => {
-      if (!term) {
-        await fetchLocations('', 0);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      try {
-        // Try name search first
-        const namePath = `Location?_count=${pageSize}&_getpagesoffset=0&_sort=name&name=${encodeURIComponent(term)}`;
-        const nameUrl = getFhirUrl(namePath);
-        const nameResponse = await fetch(nameUrl);
-        if (!nameResponse.ok) {
-          throw new Error(`Failed to fetch locations: ${nameResponse.status} ${nameResponse.statusText}`);
-        }
-        const nameData = await nameResponse.json();
-        let allLocations: Location[] = [];
-        let nextLink: string | null = null;
-        let prevLink: string | null = null;
-        if ('resourceType' in nameData && nameData.resourceType === 'Bundle') {
-          const bundle = nameData as Bundle<Location | OperationOutcome>;
-          const nameLocations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Location')
-            .map(entry => entry.resource as Location) || [];
-          allLocations = [...nameLocations];
-          nextLink = bundle.link?.find(link => link.relation === 'next')?.url || null;
-          prevLink = bundle.link?.find(link => link.relation === 'previous')?.url || null;
-        }
-        setLocations(allLocations);
-        setNextPageUrl(nextLink);
-        setPrevPageUrl(prevLink);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch locations');
-      } finally {
-        setLoading(false);
-      }
-    }, 300),
-    []
-  );
-
-  useEffect(() => {
-    debouncedSearch(searchTerm);
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [searchTerm, debouncedSearch]);
-
-  const fetchLocations = async (term: string, offset: number) => {
+  const searchLocations = useCallback(async (search: string = '', url?: string) => {
     setLoading(true);
     setError(null);
+
     try {
-      let path = `Location?_count=${pageSize}&_getpagesoffset=${offset}&_sort=name`;
-      if (term) {
-        path += `&name=${encodeURIComponent(term)}`;
+      let searchUrl: string;
+      
+      if (url) {
+        searchUrl = url;
+      } else {
+        const params = new URLSearchParams();
+        if (search) {
+          params.append('_text', search);
+        }
+        params.append('_count', '20');
+        searchUrl = `Location?${params.toString()}`;
       }
-      const url = getFhirUrl(path);
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`);
-      }
-      const data: unknown = await response.json();
-      if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-        const bundle = data as Bundle<Location | OperationOutcome>;
-        const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-        const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-        setNextPageUrl(nextLink || null);
-        setPrevPageUrl(prevLink || null);
-        const locations = bundle.entry
-          ?.filter(entry => entry.resource?.resourceType === 'Location')
-          .map(entry => entry.resource as Location) || [];
-        setLocations(locations);
-        return;
-      }
-      throw new Error(`Unexpected response type: ${typeof data === 'object' && data !== null && 'resourceType' in data ? (data as { resourceType: string }).resourceType : 'unknown'}`);
+
+      const bundle = await fhirClient.get<Bundle<Location>>(searchUrl);
+      
+      setLocations(bundle.entry?.map(entry => entry.resource as Location) || []);
+      setNextPageUrl(bundle.link?.find(link => link.relation === 'next')?.url || null);
+      setPrevPageUrl(bundle.link?.find(link => link.relation === 'previous')?.url || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch locations');
+      setError(err instanceof Error ? err.message : 'Failed to load locations');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleNextPage = async () => {
-    if (nextPageUrl) {
-      setLoading(true);
-      try {
-        const response = await fetch(nextPageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
-        }
-        const data: unknown = await response.json();
-        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-          const bundle = data as Bundle<Location | OperationOutcome>;
-          const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-          const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          setNextPageUrl(nextLink || null);
-          setPrevPageUrl(prevLink || null);
-          const locations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Location')
-            .map(entry => entry.resource as Location) || [];
-          setLocations(locations);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch next page');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term);
+    searchLocations(term);
+  }, [searchLocations]);
 
-  const handlePrevPage = async () => {
+  const handlePrevPage = useCallback(() => {
     if (prevPageUrl) {
-      setLoading(true);
-      try {
-        const response = await fetch(prevPageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
-        }
-        const data: unknown = await response.json();
-        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-          const bundle = data as Bundle<Location | OperationOutcome>;
-          const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-          const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          setNextPageUrl(nextLink || null);
-          setPrevPageUrl(prevLink || null);
-          const locations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Location')
-            .map(entry => entry.resource as Location) || [];
-          setLocations(locations);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch previous page');
-      } finally {
-        setLoading(false);
-      }
+      searchLocations(searchTerm, prevPageUrl);
     }
-  };
+  }, [prevPageUrl, searchTerm, searchLocations]);
 
-  const formatAddress = (address: any) => {
-    if (!address) return 'No address provided';
-    
-    const parts = [];
-    if (address.line && address.line.length > 0) {
-      parts.push(address.line.join(', '));
+  const handleNextPage = useCallback(() => {
+    if (nextPageUrl) {
+      searchLocations(searchTerm, nextPageUrl);
     }
-    
-    const cityParts = [];
-    if (address.city) cityParts.push(address.city);
-    if (address.state) cityParts.push(address.state);
-    if (address.postalCode) cityParts.push(address.postalCode);
-    
-    if (cityParts.length > 0) {
-      parts.push(cityParts.join(', '));
-    }
-    
-    if (address.country) {
-      parts.push(address.country);
-    }
-    
-    return parts.length > 0 ? parts.join(', ') : 'No address details';
-  };
+  }, [nextPageUrl, searchTerm, searchLocations]);
 
-  const formatType = (types: any[] | undefined) => {
-    if (!types || types.length === 0) return 'Not specified';
+  useEffect(() => {
+    searchLocations();
+  }, [searchLocations]);
+
+  const formatType = (types: Location['type']): string => {
+    if (!types || types.length === 0) {
+      return 'Not specified';
+    }
+    
     const type = types[0];
     if (type.coding && type.coding.length > 0) {
       return type.coding[0].display || type.coding[0].code || 'Unknown';
     }
-    return 'Not specified';
+    return type.text || 'Not specified';
   };
+
+  const formatAddress = (address: Location['address']): string => {
+    if (!address) {
+      return 'No address';
+    }
+    
+    const parts = [];
+    
+    if (address.line && address.line.length > 0) {
+      parts.push(address.line.join(', '));
+    }
+    if (address.city) {
+      parts.push(address.city);
+    }
+    if (address.state) {
+      parts.push(address.state);
+    }
+    
+    return parts.join(', ') || 'No address';
+  };
+
+  if (loading && locations.length === 0) {
+    return <LoadingSkeleton type="table" rows={5} />;
+  }
 
   return (
     <div className="fhir-form-wrapper">
@@ -198,8 +113,8 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name..."
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search by name or identifier..."
             className="fhir-search-input"
           />
         </div>
@@ -207,7 +122,7 @@ export function LocationList({ onSelectLocation }: LocationListProps) {
         {error && <div className="fhir-error">{error}</div>}
 
         {loading ? (
-          <div className="fhir-loading">Loading locations...</div>
+          <LoadingSkeleton type="table" rows={3} />
         ) : locations.length === 0 ? (
           <div className="fhir-empty">No locations found</div>
         ) : (

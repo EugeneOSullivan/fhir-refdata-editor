@@ -828,4 +828,91 @@
     color: var(--fhir-text-color);
     opacity: 0.7;
   }
+
+  /* Skeleton Loading Styles */
+  .fhir-skeleton-text {
+    height: 1rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+  }
+
+  .fhir-skeleton-input {
+    height: 2.5rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 6px;
+    margin: 0.25rem 0;
+  }
+
+  .fhir-skeleton-label {
+    height: 1.25rem;
+    width: 60%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .fhir-skeleton-badge {
+    height: 1.5rem;
+    width: 4rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 12px;
+  }
+
+  .fhir-skeleton-button {
+    height: 2rem;
+    width: 4rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 6px;
+  }
+
+  .fhir-skeleton-button-large {
+    height: 3rem;
+    width: 12rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 6px;
+    margin: 0 auto;
+  }
+
+  .fhir-skeleton-list-item {
+    height: 3rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Dark theme skeleton adjustments */
+  .dark-theme .fhir-skeleton-text,
+  .dark-theme .fhir-skeleton-input,
+  .dark-theme .fhir-skeleton-label,
+  .dark-theme .fhir-skeleton-badge,
+  .dark-theme .fhir-skeleton-button,
+  .dark-theme .fhir-skeleton-button-large,
+  .dark-theme .fhir-skeleton-list-item {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+  }
 }

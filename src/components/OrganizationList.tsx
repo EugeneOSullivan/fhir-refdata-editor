@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
-import type { Organization, Identifier, Bundle, OperationOutcome } from '@medplum/fhirtypes';
-import { getFhirUrl } from '../fhirClient';
-import { debounce } from 'lodash';
+import { useState, useEffect, useCallback } from 'react';
+import type { Organization, Bundle } from '@medplum/fhirtypes';
+import { fhirClient } from '../fhirClient';
+import { LoadingSkeleton } from './LoadingSkeleton';
+import type { SelectionHandler } from '../types/fhir';
 import '../styles/components.css';
 
 interface OrganizationListProps {
-  onSelectOrganization: (organization: Organization) => void;
+  onSelectOrganization: SelectionHandler<Organization>;
 }
 
 export function OrganizationList({ onSelectOrganization }: OrganizationListProps) {
@@ -15,186 +16,83 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
   const [searchTerm, setSearchTerm] = useState('');
   const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
   const [prevPageUrl, setPrevPageUrl] = useState<string | null>(null);
-  const pageSize = 10;
 
-  // Debounce search term changes
-  const debouncedSearch = useMemo(
-    () => debounce(async (term: string) => {
-      if (!term) {
-        await fetchOrganizations('', 0);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      try {
-        // Try identifier search first
-        const identifierPath = `Organization?_count=${pageSize}&_getpagesoffset=0&_sort=name&identifier=${encodeURIComponent(term)}`;
-        const identifierUrl = getFhirUrl(identifierPath);
-        const identifierResponse = await fetch(identifierUrl);
-        if (!identifierResponse.ok) {
-          throw new Error(`Failed to fetch organizations: ${identifierResponse.status} ${identifierResponse.statusText}`);
-        }
-        const identifierData = await identifierResponse.json();
-        let allOrganizations: Organization[] = [];
-        let nextLink: string | null = null;
-        let prevLink: string | null = null;
-        if ('resourceType' in identifierData && identifierData.resourceType === 'Bundle') {
-          const bundle = identifierData as Bundle<Organization | OperationOutcome>;
-          const identifierOrganizations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Organization')
-            .map(entry => entry.resource as Organization) || [];
-          allOrganizations = [...identifierOrganizations];
-          nextLink = bundle.link?.find(link => link.relation === 'next')?.url || null;
-          prevLink = bundle.link?.find(link => link.relation === 'previous')?.url || null;
-        }
-        if (allOrganizations.length > 0) {
-          setOrganizations(allOrganizations);
-          setNextPageUrl(nextLink);
-          setPrevPageUrl(prevLink);
-          return;
-        }
-        // If no results by identifier, try name search
-        const namePath = `Organization?_count=${pageSize}&_getpagesoffset=0&_sort=name&name=${encodeURIComponent(term)}`;
-        const nameUrl = getFhirUrl(namePath);
-        const nameResponse = await fetch(nameUrl);
-        if (!nameResponse.ok) {
-          throw new Error(`Failed to fetch organizations: ${nameResponse.status} ${nameResponse.statusText}`);
-        }
-        const nameData = await nameResponse.json();
-        if ('resourceType' in nameData && nameData.resourceType === 'Bundle') {
-          const bundle = nameData as Bundle<Organization | OperationOutcome>;
-          const nameOrganizations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Organization')
-            .map(entry => entry.resource as Organization) || [];
-          allOrganizations = [...nameOrganizations];
-          nextLink = bundle.link?.find(link => link.relation === 'next')?.url || null;
-          prevLink = bundle.link?.find(link => link.relation === 'previous')?.url || null;
-        }
-        setOrganizations(allOrganizations);
-        setNextPageUrl(nextLink);
-        setPrevPageUrl(prevLink);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch organizations');
-      } finally {
-        setLoading(false);
-      }
-    }, 300),
-    []
-  );
-
-  useEffect(() => {
-    debouncedSearch(searchTerm);
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [searchTerm, debouncedSearch]);
-
-  const fetchOrganizations = async (term: string, offset: number) => {
+  const searchOrganizations = useCallback(async (search: string = '', url?: string) => {
     setLoading(true);
     setError(null);
+
     try {
-      let path = `Organization?_count=${pageSize}&_getpagesoffset=${offset}&_sort=name`;
-      if (term) {
-        path += `&identifier=${encodeURIComponent(term)}&name=${encodeURIComponent(term)}`;
+      let searchUrl: string;
+      
+      if (url) {
+        searchUrl = url;
+      } else {
+        const params = new URLSearchParams();
+        if (search) {
+          params.append('_text', search);
+        }
+        params.append('_count', '20');
+        searchUrl = `Organization?${params.toString()}`;
       }
-      const url = getFhirUrl(path);
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch organizations: ${response.status} ${response.statusText}`);
-      }
-      const data: unknown = await response.json();
-      if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-        const bundle = data as Bundle<Organization | OperationOutcome>;
-        const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-        const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-        setNextPageUrl(nextLink || null);
-        setPrevPageUrl(prevLink || null);
-        const organizations = bundle.entry
-          ?.filter(entry => entry.resource?.resourceType === 'Organization')
-          .map(entry => entry.resource as Organization) || [];
-        setOrganizations(organizations);
-        return;
-      }
-      throw new Error(`Unexpected response type: ${typeof data === 'object' && data !== null && 'resourceType' in data ? (data as { resourceType: string }).resourceType : 'unknown'}`);
+
+      const bundle = await fhirClient.get<Bundle<Organization>>(searchUrl);
+      
+      setOrganizations(bundle.entry?.map(entry => entry.resource as Organization) || []);
+      setNextPageUrl(bundle.link?.find(link => link.relation === 'next')?.url || null);
+      setPrevPageUrl(bundle.link?.find(link => link.relation === 'previous')?.url || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch organizations');
+      setError(err instanceof Error ? err.message : 'Failed to load organizations');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleNextPage = async () => {
-    if (nextPageUrl) {
-      setLoading(true);
-      try {
-        const response = await fetch(nextPageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch next page: ${response.status} ${response.statusText}`);
-        }
-        const data: unknown = await response.json();
-        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-          const bundle = data as Bundle<Organization | OperationOutcome>;
-          const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-          const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          setNextPageUrl(nextLink || null);
-          setPrevPageUrl(prevLink || null);
-          const organizations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Organization')
-            .map(entry => entry.resource as Organization) || [];
-          setOrganizations(organizations);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch next page');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term);
+    searchOrganizations(term);
+  }, [searchOrganizations]);
 
-  const handlePrevPage = async () => {
+  const handlePrevPage = useCallback(() => {
     if (prevPageUrl) {
-      setLoading(true);
-      try {
-        const response = await fetch(prevPageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch previous page: ${response.status} ${response.statusText}`);
-        }
-        const data: unknown = await response.json();
-        if (typeof data === 'object' && data !== null && 'resourceType' in data && (data as { resourceType: string }).resourceType === 'Bundle') {
-          const bundle = data as Bundle<Organization | OperationOutcome>;
-          const nextLink = bundle.link?.find(link => link.relation === 'next')?.url;
-          const prevLink = bundle.link?.find(link => link.relation === 'previous')?.url;
-          setNextPageUrl(nextLink || null);
-          setPrevPageUrl(prevLink || null);
-          const organizations = bundle.entry
-            ?.filter(entry => entry.resource?.resourceType === 'Organization')
-            .map(entry => entry.resource as Organization) || [];
-          setOrganizations(organizations);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch previous page');
-      } finally {
-        setLoading(false);
-      }
+      searchOrganizations(searchTerm, prevPageUrl);
     }
+  }, [prevPageUrl, searchTerm, searchOrganizations]);
+
+  const handleNextPage = useCallback(() => {
+    if (nextPageUrl) {
+      searchOrganizations(searchTerm, nextPageUrl);
+    }
+  }, [nextPageUrl, searchTerm, searchOrganizations]);
+
+  useEffect(() => {
+    searchOrganizations();
+  }, [searchOrganizations]);
+
+  const formatIdentifiers = (identifiers: Organization['identifier']): string => {
+    if (!identifiers || identifiers.length === 0) {
+      return 'No identifiers';
+    }
+    
+    return identifiers
+      .map(id => `${id.system || 'Unknown system'}: ${id.value}`)
+      .join(', ');
   };
 
-  const formatIdentifiers = (identifiers: Identifier[] | undefined) => {
-    if (!identifiers || identifiers.length === 0) return 'None';
-    return identifiers.map(id => {
-      const system = id.system ? `${id.system}: ` : '';
-      return `${system}${id.value || 'Unknown'}`;
-    }).join(', ');
-  };
-
-  const formatType = (types: any[] | undefined) => {
-    if (!types || types.length === 0) return 'Not specified';
+  const formatType = (types: Organization['type']): string => {
+    if (!types || types.length === 0) {
+      return 'Not specified';
+    }
+    
     const type = types[0];
     if (type.coding && type.coding.length > 0) {
       return type.coding[0].display || type.coding[0].code || 'Unknown';
     }
-    return 'Not specified';
+    return type.text || 'Not specified';
   };
+
+  if (loading && organizations.length === 0) {
+    return <LoadingSkeleton type="table" rows={5} />;
+  }
 
   return (
     <div className="fhir-form-wrapper">
@@ -205,7 +103,7 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search by name or identifier..."
             className="fhir-search-input"
           />
@@ -214,7 +112,7 @@ export function OrganizationList({ onSelectOrganization }: OrganizationListProps
         {error && <div className="fhir-error">{error}</div>}
 
         {loading ? (
-          <div className="fhir-loading">Loading organizations...</div>
+          <LoadingSkeleton type="table" rows={3} />
         ) : organizations.length === 0 ? (
           <div className="fhir-empty">No organizations found</div>
         ) : (

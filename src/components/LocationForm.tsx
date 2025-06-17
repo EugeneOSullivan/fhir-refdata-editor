@@ -172,8 +172,8 @@ export function LocationForm({ initialLocation, onSave, isCreating = false }: Lo
       const hasAddressData = addressLines.some(line => line.trim()) || city || district || state || postalCode || country;
       if (hasAddressData) {
         location.address = {
-          use: addressUse as any || undefined,
-          type: addressType as any || undefined,
+          use: addressUse as 'home' | 'work' | 'temp' | 'old' | undefined,
+          type: addressType as 'postal' | 'physical' | 'both' | undefined,
           line: addressLines.filter(line => line.trim()),
           city: city || undefined,
           district: district || undefined,
@@ -187,9 +187,9 @@ export function LocationForm({ initialLocation, onSave, isCreating = false }: Lo
       const validTelecoms = telecoms.filter(t => t.value.trim());
       if (validTelecoms.length > 0) {
         location.telecom = validTelecoms.map(t => ({
-          system: t.system as any || undefined,
+          system: t.system as 'phone' | 'fax' | 'email' | 'url' | undefined,
           value: t.value,
-          use: t.use as any || undefined
+          use: t.use as 'home' | 'work' | 'temp' | 'old' | 'mobile' | undefined
         }));
       }
 
