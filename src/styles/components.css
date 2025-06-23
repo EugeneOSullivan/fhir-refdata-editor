@@ -818,7 +818,172 @@
     text-align: center;
     padding: 2rem;
     color: var(--fhir-text-color);
-    opacity: 0.7;
+    font-size: 1.1rem;
+  }
+
+  /* Skeleton loading animation */
+  .fhir-skeleton {
+    background: linear-gradient(90deg, 
+      var(--fhir-border-color) 25%, 
+      var(--fhir-table-row-hover) 50%, 
+      var(--fhir-border-color) 75%);
+    background-size: 200% 100%;
+    animation: fhir-skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes fhir-skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Skeleton table row */
+  .fhir-skeleton-row {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--fhir-border-color);
+  }
+
+  .fhir-skeleton-cell {
+    flex: 1;
+    height: 1.2rem;
+  }
+
+  .fhir-skeleton-cell-small {
+    flex: 0.5;
+    height: 1.2rem;
+  }
+
+  .fhir-skeleton-cell-large {
+    flex: 2;
+    height: 1.2rem;
+  }
+
+  /* Table fade-in animation */
+  .fhir-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    animation: fhir-table-fade-in 0.3s ease-in-out;
+  }
+
+  @keyframes fhir-table-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Staggered row animation */
+  .fhir-table-row {
+    transition: all 0.2s ease-in-out;
+    animation: fhir-row-fade-in 0.3s ease-in-out;
+  }
+
+  .fhir-table-row:nth-child(1) { animation-delay: 0.1s; }
+  .fhir-table-row:nth-child(2) { animation-delay: 0.15s; }
+  .fhir-table-row:nth-child(3) { animation-delay: 0.2s; }
+  .fhir-table-row:nth-child(4) { animation-delay: 0.25s; }
+  .fhir-table-row:nth-child(5) { animation-delay: 0.3s; }
+  .fhir-table-row:nth-child(6) { animation-delay: 0.35s; }
+  .fhir-table-row:nth-child(7) { animation-delay: 0.4s; }
+  .fhir-table-row:nth-child(8) { animation-delay: 0.45s; }
+  .fhir-table-row:nth-child(9) { animation-delay: 0.5s; }
+  .fhir-table-row:nth-child(10) { animation-delay: 0.55s; }
+
+  .fhir-table-row:hover {
+    background-color: var(--fhir-table-row-hover);
+    transform: translateX(2px);
+  }
+
+  @keyframes fhir-row-fade-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Loading spinner for buttons */
+  .fhir-btn-loading {
+    position: relative;
+    color: transparent !important;
+  }
+
+  .fhir-btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: fhir-spin 1s linear infinite;
+  }
+
+  @keyframes fhir-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Pulse animation for loading states */
+  .fhir-pulse {
+    animation: fhir-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes fhir-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Smooth transitions for all interactive elements */
+  .fhir-table-cell,
+  .fhir-btn,
+  .fhir-search-input {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Loading overlay for table */
+  .fhir-table-loading {
+    position: relative;
+  }
+
+  .fhir-table-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .dark-theme .fhir-table-loading::after {
+    background: rgba(26, 26, 26, 0.8);
   }
 
   /* Empty State */
