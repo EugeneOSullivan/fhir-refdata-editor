@@ -83,7 +83,7 @@ export function organizationToQuestionnaireResponse(organization: Organization):
     response.item!.push({
       linkId: 'partOf',
       text: 'Parent Organization Reference',
-      answer: [{ valueString: organization.partOf.reference }]
+      answer: [{ valueReference: { reference: organization.partOf.reference } }]
     });
   }
 
@@ -158,9 +158,9 @@ export function questionnaireResponseToOrganization(response: QuestionnaireRespo
 
   // Parent Organization
   const partOfItem = response.item?.find(item => item.linkId === 'partOf');
-  if (partOfItem?.answer?.[0]?.valueString) {
+  if (partOfItem?.answer?.[0]?.valueReference) {
     organization.partOf = {
-      reference: partOfItem.answer[0].valueString
+      reference: partOfItem.answer[0].valueReference.reference
     };
   }
 

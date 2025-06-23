@@ -12,7 +12,7 @@ export function practitionerRoleToQuestionnaireResponse(practitionerRole: Practi
     response.item!.push({
       linkId: 'practitioner',
       text: 'Practitioner',
-      answer: [{ valueString: practitionerRole.practitioner.reference }]
+      answer: [{ valueReference: { reference: practitionerRole.practitioner.reference } }]
     });
   }
 
@@ -21,7 +21,7 @@ export function practitionerRoleToQuestionnaireResponse(practitionerRole: Practi
     response.item!.push({
       linkId: 'organization',
       text: 'Managing Organization',
-      answer: [{ valueString: practitionerRole.organization.reference }]
+      answer: [{ valueReference: { reference: practitionerRole.organization.reference } }]
     });
   }
 
@@ -98,14 +98,14 @@ export function questionnaireResponseToPractitionerRole(response: QuestionnaireR
 
   // Practitioner reference
   const practitionerItem = response.item?.find(item => item.linkId === 'practitioner');
-  if (practitionerItem?.answer?.[0]?.valueString) {
-    practitionerRole.practitioner = { reference: practitionerItem.answer[0].valueString };
+  if (practitionerItem?.answer?.[0]?.valueReference) {
+    practitionerRole.practitioner = { reference: practitionerItem.answer[0].valueReference.reference };
   }
 
   // Organization reference
   const organizationItem = response.item?.find(item => item.linkId === 'organization');
-  if (organizationItem?.answer?.[0]?.valueString) {
-    practitionerRole.organization = { reference: organizationItem.answer[0].valueString };
+  if (organizationItem?.answer?.[0]?.valueReference) {
+    practitionerRole.organization = { reference: organizationItem.answer[0].valueReference.reference };
   }
 
   // Code (role)

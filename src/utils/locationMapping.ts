@@ -248,7 +248,7 @@ export function locationToQuestionnaireResponse(location: Location): Questionnai
   if (location.managingOrganization?.reference) {
     items.push({
       linkId: 'managingOrganization',
-      answer: [{ valueString: location.managingOrganization.reference }]
+      answer: [{ valueReference: { reference: location.managingOrganization.reference } }]
     });
   }
 
@@ -373,9 +373,9 @@ export function questionnaireResponseToLocation(response: QuestionnaireResponse)
 
   // Managing Organization
   const managingOrgItem = findItem('managingOrganization');
-  if (managingOrgItem?.answer?.[0]?.valueString) {
+  if (managingOrgItem?.answer?.[0]?.valueReference?.reference) {
     location.managingOrganization = {
-      reference: managingOrgItem.answer[0].valueString
+      reference: managingOrgItem.answer[0].valueReference.reference
     };
   }
 

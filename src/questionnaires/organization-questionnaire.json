@@ -5,6 +5,11 @@
   "title": "Edit Organization",
   "item": [
     {
+      "linkId": "partOf",
+      "text": "Parent Organization Reference",
+      "type": "reference"
+    },
+    {
       "linkId": "name",
       "text": "Organization Name",
       "type": "string",
@@ -73,11 +78,6 @@
       "linkId": "active",
       "text": "Active",
       "type": "boolean"
-    },
-    {
-      "linkId": "partOf",
-      "text": "Parent Organization Reference",
-      "type": "string"
     }
   ]
 } 
