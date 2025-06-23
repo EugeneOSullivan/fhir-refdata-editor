@@ -1,165 +1,120 @@
-# FHIR SDC Form Editor
+# FHIR Reference Data Editor
 
-A React-based application for editing FHIR Practitioner resources using Structured Data Capture (SDC) forms. This application provides a user-friendly interface for creating, viewing, and editing practitioner information in a FHIR-compatible format.
+A React-based application for managing FHIR reference data resources using Structured Data Capture (SDC) forms. This application provides a user-friendly interface for creating, viewing, editing, and searching various FHIR resources in a standardized format.
+
+## What It Does
+
+The FHIR Reference Data Editor is a comprehensive tool for healthcare administrators and developers to manage core reference data in a FHIR-compatible system. It provides:
+
+- **Resource Management**: Create, edit, view, and delete FHIR resources
+- **Search & Discovery**: Find existing resources with real-time search and pagination
+- **Standardized Forms**: Use SDC (Structured Data Capture) forms for consistent data entry
+- **Type-ahead Lookups**: Intelligent picker components for referencing related resources
+- **Modern UI**: Clean, responsive interface with loading animations and smooth interactions
 
 ## Features
 
-- Search and list practitioners with pagination
-- Create new practitioners
-- Edit existing practitioners using SDC forms
-- Real-time form validation
-- FHIR-compatible data storage
-- Responsive design
-- Debounced search and form updates for better performance
-- State management optimized to prevent unnecessary re-renders
+### Supported Resource Types
+- **Practitioners**: Healthcare professionals with contact information and qualifications
+- **Organizations**: Healthcare facilities, clinics, and administrative entities
+- **Locations**: Physical locations where healthcare services are provided
+- **Practitioner Roles**: Relationships between practitioners and organizations
+
+### Core Functionality
+- **Search & Browse**: Real-time search with debounced input and pagination
+- **Create & Edit**: Intuitive forms with validation and auto-save capabilities
+- **Reference Management**: Smart picker components for linking related resources
+- **Data Validation**: FHIR-compliant validation with real-time feedback
+- **Performance Optimized**: Efficient loading, caching, and state management
+- **Responsive Design**: Works on desktop and mobile devices
+
+### User Experience
+- **Loading Animations**: Skeleton loaders and smooth transitions
+- **Error Handling**: Clear error messages and recovery options
+- **Auto-completion**: Type-ahead suggestions for better data entry
+- **Breadcrumb Navigation**: Clear navigation between different resource types
+- **Theme Support**: Light/dark mode toggle
 
 ## Technology Stack
 
-- **Frontend Framework**: React 18 with TypeScript
-- **FHIR Integration**: 
-  - `@medplum/fhirtypes` for FHIR type definitions
-  - Custom FHIR client for API interactions
-- **Form Rendering**: `@aehrc/smart-forms-renderer` for SDC form rendering
-- **State Management**: React's built-in state management with hooks
-- **Styling**: Inline styles with modern CSS features
-- **Build Tools**: Vite for development and building
-- **Development Tools**:
-  - ESLint for code linting
-  - TypeScript for type safety
-  - React Fast Refresh for development
+- **Frontend**: React 18 with TypeScript
+- **FHIR Integration**: Custom FHIR client with @medplum/fhirtypes
+- **Form Rendering**: @aehrc/smart-forms-renderer for SDC forms
+- **Styling**: Tailwind CSS with custom components
+- **Build Tool**: Vite for fast development and optimized builds
+- **Development**: ESLint, TypeScript, React Fast Refresh
 
 ## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── SDCFormWrapper.tsx    # Form wrapper component with state management
-│   ├── PractitionerList.tsx  # Practitioner search and list component
-│   └── ResponseDisplay.tsx   # Modal for displaying response data
+│   ├── SDCFormWrapper.tsx        # Main form wrapper with SDC integration
+│   ├── PractitionerList.tsx      # Practitioner search and list
+│   ├── OrganizationList.tsx      # Organization search and list
+│   ├── LocationList.tsx          # Location search and list
+│   ├── PractitionerRoleList.tsx  # Practitioner role search and list
+│   ├── PractitionerPicker.tsx    # Type-ahead picker for practitioners
+│   ├── OrganizationPicker.tsx    # Type-ahead picker for organizations
+│   ├── Breadcrumb.tsx            # Navigation breadcrumbs
+│   ├── ThemeToggle.tsx           # Light/dark mode toggle
+│   └── ResponseDisplay.tsx       # Modal for displaying responses
 ├── questionnaires/
-│   └── practitioner-questionnaire.json  # SDC form definition
+│   ├── practitioner-questionnaire.json      # SDC form for practitioners
+│   ├── organization-questionnaire.json      # SDC form for organizations
+│   ├── location-questionnaire.json          # SDC form for locations
+│   └── practitioner-role-questionnaire.json # SDC form for practitioner roles
 ├── utils/
-│   └── practitionerMapping.ts # FHIR resource mapping utilities
-├── App.tsx                   # Main application component
-├── fhirClient.ts            # FHIR API client configuration
-└── main.tsx                 # Application entry point
+│   ├── practitionerMapping.ts    # FHIR ↔ SDC mapping for practitioners
+│   ├── organizationMapping.ts    # FHIR ↔ SDC mapping for organizations
+│   ├── locationMapping.ts        # FHIR ↔ SDC mapping for locations
+│   ├── practitionerRoleMapping.ts # FHIR ↔ SDC mapping for practitioner roles
+│   └── ThemeContext.tsx          # Theme management
+├── fhirClient.ts                 # FHIR API client configuration
+└── App.tsx                       # Main application component
 ```
 
-## Architecture
-
-### Component Architecture
-
-1. **App Component (`App.tsx`)**
-   - Main application container
-   - Manages global state and routing
-   - Handles practitioner CRUD operations
-   - Coordinates between list and form views
-   - Implements error handling and loading states
-
-2. **SDCFormWrapper (`SDCFormWrapper.tsx`)**
-   - Wraps the smart forms renderer
-   - Manages form state and validation
-   - Handles form submission and updates
-   - Implements debounced updates to prevent unnecessary re-renders
-   - Maintains local state for better performance
-   - Syncs with global store when necessary
-
-3. **PractitionerList (`PractitionerList.tsx`)**
-   - Implements practitioner search functionality
-   - Handles pagination with FHIR bundle links
-   - Provides practitioner selection interface
-   - Implements debounced search (300ms)
-   - Supports search by identifier and family name
-   - Displays loading and error states
-
-### Data Flow
-
-1. **Practitioner Loading**
-   - Search initiated through PractitionerList
-   - Results fetched from FHIR server using bundle pagination
-   - Selected practitioner loaded into form
-   - Data converted between FHIR and questionnaire formats
-   - State cleanup to prevent stale data
-
-2. **Form Updates**
-   - Local state management prevents unnecessary re-renders
-   - Changes debounced to optimize performance
-   - Updates synced with global store
-   - Validation performed before submission
-   - Optimistic updates for better UX
-
-3. **Data Persistence**
-   - Form data converted to FHIR format
-   - POST/PUT requests to FHIR server
-   - Response converted back to questionnaire format
-   - UI updated with saved data
-   - Error handling with user feedback
-
-## Building and Running
+## Setup and Installation
 
 ### Prerequisites
-
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
 - npm or yarn
-- Access to a FHIR server (FHIR R4)
+- Access to a FHIR R4 server
 
-### Installation
+### Quick Start
 
-1. Clone the repository:
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/fhir-sdc-app.git
-   cd fhir-sdc-app
+   git clone <repository-url>
+   cd fhir-refdata-editor
    ```
 
-2. Install dependencies:
+2. **Install dependencies**
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. Configure FHIR server:
-   - Update `src/fhirClient.ts` with your FHIR server details:
-     ```typescript
-     export const fhirClient = {
-       baseUrl: 'https://your-fhir-server/fhir',
-       // Add any required headers for authentication
-       headers: {
-         'Authorization': 'Bearer your-token',
-         'Content-Type': 'application/fhir+json'
-       }
-     };
-     ```
-   - Ensure CORS is properly configured on your FHIR server:
-     ```
-     Access-Control-Allow-Origin: http://localhost:5173
-     Access-Control-Allow-Methods: GET, POST, PUT, DELETE
-     Access-Control-Allow-Headers: Content-Type, Authorization
-     ```
+3. **Configure FHIR server**
+   
+   Update `src/fhirClient.ts` with your FHIR server details:
+   ```typescript
+   export const fhirClient = {
+     baseUrl: 'https://your-fhir-server/fhir',
+     headers: {
+       'Authorization': 'Bearer your-token',
+       'Content-Type': 'application/fhir+json'
+     }
+   };
+   ```
 
-### Development
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-Run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-```
+   The application will be available at `http://localhost:5173`
 
-The application will be available at `http://localhost:5173`
-
-### Building for Production
-
-Create a production build:
-```bash
-npm run build
-# or
-yarn build
-```
-
-The built files will be in the `dist` directory.
-
-### Environment Variables
+### Environment Configuration
 
 Create a `.env` file in the root directory:
 ```env
@@ -167,76 +122,142 @@ VITE_FHIR_SERVER_URL=https://your-fhir-server/fhir
 VITE_FHIR_AUTH_TOKEN=your-auth-token
 ```
 
+### CORS Configuration
+
+Ensure your FHIR server allows requests from the development server:
+```
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+```
+
+## How It Works
+
+### Architecture Overview
+
+The application uses a hybrid approach combining SDC forms with custom picker components:
+
+1. **SDC Forms**: Standardized forms defined in JSON questionnaires
+2. **Custom Pickers**: Type-ahead components for reference fields
+3. **Mapping Utilities**: Convert between FHIR resources and SDC format
+4. **FHIR Client**: Handles all API interactions
+
+### Data Flow
+
+1. **Resource Loading**
+   - User searches or browses resources
+   - FHIR client fetches data with pagination
+   - Results displayed in responsive tables
+   - Loading states and animations provide feedback
+
+2. **Form Interaction**
+   - SDC forms render with Material-UI styling
+   - Reference fields use custom picker components
+   - Real-time validation and auto-save
+   - Data converted between FHIR and SDC formats
+
+3. **Data Persistence**
+   - Form data validated and converted to FHIR format
+   - POST/PUT requests sent to FHIR server
+   - Success/error feedback provided to user
+   - UI updated with saved data
+
+### Key Components
+
+#### SDCFormWrapper
+- Wraps the smart forms renderer
+- Detects reference fields and renders custom pickers
+- Manages form state and validation
+- Handles data conversion between formats
+
+#### List Components
+- Implement search with debouncing
+- Handle pagination using FHIR bundle links
+- Display loading states and animations
+- Provide selection interface
+
+#### Picker Components
+- Type-ahead search for related resources
+- Display resource names and IDs
+- Handle selection and validation
+- Support prepopulation for editing
+
+#### Mapping Utilities
+- Convert FHIR resources to SDC format
+- Handle reference field mapping
+- Maintain data integrity
+- Support bidirectional conversion
+
 ## FHIR Integration
 
-### Resource Types
+### Supported Operations
+- `GET /{resourceType}` - Search resources with filters
+- `GET /{resourceType}/{id}` - Get specific resource
+- `POST /{resourceType}` - Create new resource
+- `PUT /{resourceType}/{id}` - Update existing resource
 
-The application currently supports:
-- Practitioner resources (R4)
-- Questionnaire resources (SDC forms)
-- QuestionnaireResponse resources
+### Resource Types
+- **Practitioner**: Healthcare professionals
+- **Organization**: Healthcare facilities and entities
+- **Location**: Physical service locations
+- **PractitionerRole**: Practitioner-organization relationships
 
 ### Data Mapping
+Each resource type has dedicated mapping utilities that:
+- Convert FHIR resources to SDC questionnaire responses
+- Handle reference field relationships
+- Maintain data consistency
+- Support validation rules
 
-The application includes utilities for mapping between:
-- FHIR Practitioner resources
-- SDC QuestionnaireResponse resources
-- Form UI state
+## Development
 
-Key mapping functions:
-- `practitionerToQuestionnaireResponse`: Converts FHIR Practitioner to QuestionnaireResponse
-- `questionnaireResponseToPractitioner`: Converts QuestionnaireResponse to FHIR Practitioner
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Create production build
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+npm run test         # Run tests
+```
 
-### FHIR Operations
+### Building for Production
+```bash
+npm run build
+```
 
-The application implements the following FHIR operations:
-- `GET /Practitioner` - Search practitioners
-- `GET /Practitioner/{id}` - Get practitioner by ID
-- `POST /Practitioner` - Create new practitioner
-- `PUT /Practitioner/{id}` - Update existing practitioner
+The built files will be in the `dist` directory, ready for deployment.
 
-## Form Structure
-
-The SDC form is defined in `practitioner-questionnaire.json` and includes:
-- Name information (use, family, given, prefix, suffix)
-- Identifiers (system and value)
-- Contact information (telecom)
-- Gender
-- Birth date
-- Active status
-
-### Form Validation
-
-The form implements:
-- Required field validation
-- Data type validation
-- FHIR resource validation
-- Real-time validation feedback
+### Testing
+```bash
+npm run test         # Run unit tests
+npm run test:e2e     # Run end-to-end tests
+```
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Make your changes following the existing patterns
+4. Add tests for new functionality
+5. Commit with clear messages (`git commit -m 'Add new feature'`)
+6. Push and create a pull request
 
 ### Development Guidelines
-
-- Follow TypeScript best practices
-- Use functional components with hooks
-- Implement proper error handling
-- Add appropriate comments and documentation
-- Write meaningful commit messages
-- Test changes thoroughly
+- Use TypeScript for all new code
+- Follow existing component patterns
+- Add proper error handling
+- Include loading states
+- Test thoroughly before submitting
+- Update documentation as needed
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-- [@aehrc/smart-forms-renderer](https://github.com/aehrc/smart-forms-renderer) for the SDC form rendering
+- [@aehrc/smart-forms-renderer](https://github.com/aehrc/smart-forms-renderer) for SDC form rendering
 - [@medplum/fhirtypes](https://github.com/medplum/medplum) for FHIR type definitions
-- [Vite](https://vitejs.dev/) for the build tooling
+- [Vite](https://vitejs.dev/) for build tooling
 - [React](https://reactjs.org/) for the UI framework
+- [Tailwind CSS](https://tailwindcss.com/) for styling
