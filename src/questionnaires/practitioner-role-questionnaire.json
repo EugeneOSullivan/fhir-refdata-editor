@@ -18,22 +18,22 @@
     },
     {
       "linkId": "code",
-      "text": "Role",
+      "text": "Roles",
       "type": "group",
       "repeats": true,
       "item": [
         {
-          "linkId": "code.coding.system",
+          "linkId": "code.system",
           "text": "System",
           "type": "string"
         },
         {
-          "linkId": "code.coding.code",
+          "linkId": "code.code",
           "text": "Code",
           "type": "string"
         },
         {
-          "linkId": "code.coding.display",
+          "linkId": "code.display",
           "text": "Display",
           "type": "string"
         }
@@ -41,22 +41,22 @@
     },
     {
       "linkId": "specialty",
-      "text": "Specialty",
+      "text": "Specialties",
       "type": "group",
       "repeats": true,
       "item": [
         {
-          "linkId": "specialty.coding.system",
+          "linkId": "specialty.system",
           "text": "System",
           "type": "string"
         },
         {
-          "linkId": "specialty.coding.code",
+          "linkId": "specialty.code",
           "text": "Code",
           "type": "string"
         },
         {
-          "linkId": "specialty.coding.display",
+          "linkId": "specialty.display",
           "text": "Display",
           "type": "string"
         }

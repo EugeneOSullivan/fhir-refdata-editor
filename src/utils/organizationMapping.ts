@@ -1,6 +1,7 @@
 import type { Organization, QuestionnaireResponse, QuestionnaireResponseItem, ContactPoint, Identifier, Address } from '@medplum/fhirtypes';
 
 export function organizationToQuestionnaireResponse(organization: Organization): QuestionnaireResponse {
+  console.log('organizationToQuestionnaireResponse: Input:', JSON.stringify(organization, null, 2));
   const response: QuestionnaireResponse = {
     resourceType: 'QuestionnaireResponse',
     status: 'in-progress',
@@ -56,17 +57,57 @@ export function organizationToQuestionnaireResponse(organization: Organization):
   // Address
   if (organization.address && organization.address.length > 0) {
     const addr = organization.address[0];
-    response.item!.push({
+    const addressItem: QuestionnaireResponseItem = {
       linkId: 'address',
       text: 'Address',
-      item: [
-        { linkId: 'address.line', answer: (addr.line || []).map(line => ({ valueString: line })) },
-        { linkId: 'address.city', answer: addr.city ? [{ valueString: addr.city }] : [] },
-        { linkId: 'address.state', answer: addr.state ? [{ valueString: addr.state }] : [] },
-        { linkId: 'address.postalCode', answer: addr.postalCode ? [{ valueString: addr.postalCode }] : [] },
-        { linkId: 'address.country', answer: addr.country ? [{ valueString: addr.country }] : [] }
-      ]
-    });
+      item: []
+    };
+    
+    // Handle address lines - create separate items for each line
+    if (addr.line && addr.line.length > 0) {
+      addr.line.forEach((line) => {
+        addressItem.item!.push({
+          linkId: 'address.line',
+          text: 'Street',
+          answer: [{ valueString: line }]
+        });
+      });
+    }
+    
+    // Add other address fields
+    if (addr.city) {
+      addressItem.item!.push({
+        linkId: 'address.city',
+        text: 'City',
+        answer: [{ valueString: addr.city }]
+      });
+    }
+    if (addr.state) {
+      addressItem.item!.push({
+        linkId: 'address.state',
+        text: 'State',
+        answer: [{ valueString: addr.state }]
+      });
+    }
+    if (addr.postalCode) {
+      addressItem.item!.push({
+        linkId: 'address.postalCode',
+        text: 'Postal Code',
+        answer: [{ valueString: addr.postalCode }]
+      });
+    }
+    if (addr.country) {
+      addressItem.item!.push({
+        linkId: 'address.country',
+        text: 'Country',
+        answer: [{ valueString: addr.country }]
+      });
+    }
+    
+    // Only add the address group if it has items
+    if (addressItem.item!.length > 0) {
+      response.item!.push(addressItem);
+    }
   }
 
   // Active
@@ -87,6 +128,7 @@ export function organizationToQuestionnaireResponse(organization: Organization):
     });
   }
 
+  console.log('organizationToQuestionnaireResponse: Output:', JSON.stringify(response, null, 2));
   return response;
 }
 
@@ -136,13 +178,17 @@ export function questionnaireResponseToOrganization(response: QuestionnaireRespo
   // Address
   const addressGroup = response.item?.find(item => item.linkId === 'address');
   if (addressGroup && addressGroup.item) {
-    const lineAnswers = addressGroup.item.find(i => i.linkId === 'address.line')?.answer || [];
+    // Collect all address lines
+    const lineItems = addressGroup.item.filter(i => i.linkId === 'address.line');
+    const lines = lineItems.map(item => item.answer?.[0]?.valueString).filter((v): v is string => typeof v === 'string');
+    
     const city = findAnswer(addressGroup.item, 'address.city');
     const state = findAnswer(addressGroup.item, 'address.state');
     const postalCode = findAnswer(addressGroup.item, 'address.postalCode');
     const country = findAnswer(addressGroup.item, 'address.country');
+    
     organization.address = [{
-      line: lineAnswers.map(a => a.valueString).filter((v): v is string => typeof v === 'string'),
+      line: lines.length > 0 ? lines : undefined,
       city: typeof city === 'string' ? city : undefined,
       state: typeof state === 'string' ? state : undefined,
       postalCode: typeof postalCode === 'string' ? postalCode : undefined,

@@ -206,19 +206,41 @@ function CustomFormRenderer({
   const handlePickerChange = useCallback((linkId: string, value: string) => {
     if (!localResponse) return;
 
-    const updatedResponse = {
-      ...localResponse,
-      item: localResponse.item?.map(item => {
-        if (item.linkId === linkId) {
-          return {
-            ...item,
-            answer: value ? [{ valueReference: { reference: value } }] : []
-          };
-        }
-        return item;
-      }) || []
-    };
+    // Check if the item already exists
+    const existingItem = localResponse.item?.find(item => item.linkId === linkId);
+    
+    let updatedResponse;
+    if (existingItem) {
+      // Update existing item
+      updatedResponse = {
+        ...localResponse,
+        item: localResponse.item?.map(item => {
+          if (item.linkId === linkId) {
+            return {
+              ...item,
+              answer: value ? [{ valueReference: { reference: value } }] : []
+            };
+          }
+          return item;
+        }) || []
+      };
+    } else {
+      // Add new item if it doesn't exist
+      const newItem = {
+        linkId: linkId,
+        text: linkId === 'partOf' ? 'Parent Organization Reference' : 
+              linkId === 'practitioner' ? 'Practitioner' : 
+              linkId === 'organization' ? 'Managing Organization' : linkId,
+        answer: value ? [{ valueReference: { reference: value } }] : []
+      };
+      
+      updatedResponse = {
+        ...localResponse,
+        item: [...(localResponse.item || []), newItem]
+      };
+    }
 
+    console.log(`handlePickerChange(${linkId}, ${value}):`, { existingItem, updatedResponse });
     setLocalResponse(updatedResponse);
     onResponseChange(updatedResponse);
   }, [localResponse, onResponseChange]);
@@ -253,6 +275,16 @@ function CustomFormRenderer({
   // Render reference fields with custom pickers, then use SDC for the rest
   const referenceItems = (questionnaire as any)?.item?.filter((item: any) => item.type === 'reference') || [];
   const nonReferenceItems = (questionnaire as any)?.item?.filter((item: any) => item.type !== 'reference') || [];
+
+  // Add debugging for SmartFormsRenderer
+  console.log('CustomFormRenderer: Passing to SmartFormsRenderer:', {
+    questionnaire: {
+      ...questionnaire,
+      item: nonReferenceItems
+    },
+    questionnaireResponse: localResponse,
+    readOnly
+  });
 
   return (
     <div>

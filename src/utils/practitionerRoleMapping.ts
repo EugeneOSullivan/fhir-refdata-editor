@@ -1,6 +1,7 @@
 import type { PractitionerRole, QuestionnaireResponse, QuestionnaireResponseItem, CodeableConcept, Period } from '@medplum/fhirtypes';
 
 export function practitionerRoleToQuestionnaireResponse(practitionerRole: PractitionerRole): QuestionnaireResponse {
+  console.log('practitionerRoleToQuestionnaireResponse: Input:', JSON.stringify(practitionerRole, null, 2));
   const response: QuestionnaireResponse = {
     resourceType: 'QuestionnaireResponse',
     status: 'in-progress',
@@ -25,52 +26,115 @@ export function practitionerRoleToQuestionnaireResponse(practitionerRole: Practi
     });
   }
 
-  // Code (role)
+  // Code (roles) - handle multiple roles
   if (practitionerRole.code && practitionerRole.code.length > 0) {
     practitionerRole.code.forEach((code) => {
       if (code.coding && code.coding.length > 0) {
         const coding = code.coding[0];
-        response.item!.push({
+        const codeItem: QuestionnaireResponseItem = {
           linkId: 'code',
-          text: 'Role',
-          item: [
-            { linkId: 'code.coding.system', answer: coding.system ? [{ valueString: coding.system }] : [] },
-            { linkId: 'code.coding.code', answer: coding.code ? [{ valueString: coding.code }] : [] },
-            { linkId: 'code.coding.display', answer: coding.display ? [{ valueString: coding.display }] : [] }
-          ]
-        });
+          text: 'Roles',
+          item: []
+        };
+        
+        if (coding.system) {
+          codeItem.item!.push({
+            linkId: 'code.system',
+            text: 'System',
+            answer: [{ valueString: coding.system }]
+          });
+        }
+        if (coding.code) {
+          codeItem.item!.push({
+            linkId: 'code.code',
+            text: 'Code',
+            answer: [{ valueString: coding.code }]
+          });
+        }
+        if (coding.display) {
+          codeItem.item!.push({
+            linkId: 'code.display',
+            text: 'Display',
+            answer: [{ valueString: coding.display }]
+          });
+        }
+        
+        // Only add the code group if it has items
+        if (codeItem.item!.length > 0) {
+          response.item!.push(codeItem);
+        }
       }
     });
   }
 
-  // Specialty
+  // Specialty - handle multiple specialties
   if (practitionerRole.specialty && practitionerRole.specialty.length > 0) {
     practitionerRole.specialty.forEach((specialty) => {
       if (specialty.coding && specialty.coding.length > 0) {
         const coding = specialty.coding[0];
-        response.item!.push({
+        const specialtyItem: QuestionnaireResponseItem = {
           linkId: 'specialty',
-          text: 'Specialty',
-          item: [
-            { linkId: 'specialty.coding.system', answer: coding.system ? [{ valueString: coding.system }] : [] },
-            { linkId: 'specialty.coding.code', answer: coding.code ? [{ valueString: coding.code }] : [] },
-            { linkId: 'specialty.coding.display', answer: coding.display ? [{ valueString: coding.display }] : [] }
-          ]
-        });
+          text: 'Specialties',
+          item: []
+        };
+        
+        if (coding.system) {
+          specialtyItem.item!.push({
+            linkId: 'specialty.system',
+            text: 'System',
+            answer: [{ valueString: coding.system }]
+          });
+        }
+        if (coding.code) {
+          specialtyItem.item!.push({
+            linkId: 'specialty.code',
+            text: 'Code',
+            answer: [{ valueString: coding.code }]
+          });
+        }
+        if (coding.display) {
+          specialtyItem.item!.push({
+            linkId: 'specialty.display',
+            text: 'Display',
+            answer: [{ valueString: coding.display }]
+          });
+        }
+        
+        // Only add the specialty group if it has items
+        if (specialtyItem.item!.length > 0) {
+          response.item!.push(specialtyItem);
+        }
       }
     });
   }
 
-  // Period
+  // Period - single group
   if (practitionerRole.period) {
-    response.item!.push({
+    const periodItem: QuestionnaireResponseItem = {
       linkId: 'period',
       text: 'Period',
-      item: [
-        { linkId: 'period.start', answer: practitionerRole.period.start ? [{ valueDate: practitionerRole.period.start }] : [] },
-        { linkId: 'period.end', answer: practitionerRole.period.end ? [{ valueDate: practitionerRole.period.end }] : [] }
-      ]
-    });
+      item: []
+    };
+    
+    if (practitionerRole.period.start) {
+      periodItem.item!.push({
+        linkId: 'period.start',
+        text: 'Start Date',
+        answer: [{ valueDate: practitionerRole.period.start }]
+      });
+    }
+    if (practitionerRole.period.end) {
+      periodItem.item!.push({
+        linkId: 'period.end',
+        text: 'End Date',
+        answer: [{ valueDate: practitionerRole.period.end }]
+      });
+    }
+    
+    // Only add the period group if it has items
+    if (periodItem.item!.length > 0) {
+      response.item!.push(periodItem);
+    }
   }
 
   // Active
@@ -82,6 +146,7 @@ export function practitionerRoleToQuestionnaireResponse(practitionerRole: Practi
     });
   }
 
+  console.log('practitionerRoleToQuestionnaireResponse: Output:', JSON.stringify(response, null, 2));
   return response;
 }
 
@@ -108,13 +173,13 @@ export function questionnaireResponseToPractitionerRole(response: QuestionnaireR
     practitionerRole.organization = { reference: organizationItem.answer[0].valueReference.reference };
   }
 
-  // Code (role)
+  // Code (roles) - handle multiple roles
   const codeGroups = response.item?.filter(item => item.linkId === 'code') || [];
   if (codeGroups.length > 0) {
     practitionerRole.code = codeGroups.map(group => {
-      const system = findAnswer(group.item, 'code.coding.system');
-      const code = findAnswer(group.item, 'code.coding.code');
-      const display = findAnswer(group.item, 'code.coding.display');
+      const system = findAnswer(group.item, 'code.system');
+      const code = findAnswer(group.item, 'code.code');
+      const display = findAnswer(group.item, 'code.display');
       return {
         coding: [{
           system: typeof system === 'string' ? system : undefined,
@@ -125,13 +190,13 @@ export function questionnaireResponseToPractitionerRole(response: QuestionnaireR
     });
   }
 
-  // Specialty
+  // Specialty - handle multiple specialties
   const specialtyGroups = response.item?.filter(item => item.linkId === 'specialty') || [];
   if (specialtyGroups.length > 0) {
     practitionerRole.specialty = specialtyGroups.map(group => {
-      const system = findAnswer(group.item, 'specialty.coding.system');
-      const code = findAnswer(group.item, 'specialty.coding.code');
-      const display = findAnswer(group.item, 'specialty.coding.display');
+      const system = findAnswer(group.item, 'specialty.system');
+      const code = findAnswer(group.item, 'specialty.code');
+      const display = findAnswer(group.item, 'specialty.display');
       return {
         coding: [{
           system: typeof system === 'string' ? system : undefined,
@@ -142,7 +207,7 @@ export function questionnaireResponseToPractitionerRole(response: QuestionnaireR
     });
   }
 
-  // Period
+  // Period - single group
   const periodGroup = response.item?.find(item => item.linkId === 'period');
   if (periodGroup && periodGroup.item) {
     const start = findAnswer(periodGroup.item, 'period.start');
